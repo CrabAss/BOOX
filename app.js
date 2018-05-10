@@ -1,11 +1,13 @@
-let createError = require('http-errors'); //ok
+let createError = require('http-errors'); //okss
 let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 
 let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
+let bookRouter = require('./routes/book');
+let transactionRouter = require('./routes/transaction');
+let userRouter = require('./routes/user');
 
 let app = express();
 
@@ -20,7 +22,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/book', bookRouter);
+app.use('/transaction', transactionRouter);
+app.use('/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
