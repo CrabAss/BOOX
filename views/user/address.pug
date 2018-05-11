@@ -3,7 +3,6 @@ extends ../layout
 block header
     title Place Autocomplete Address Form
     meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
-    meta(http-equiv='content-language', content='en-US')
     meta(charset='utf-8')
 
     style.
@@ -168,7 +167,7 @@ block content
             data[3] = adr.State;
             data[4] = adr.Country;
             for (var i = 0; i <= 4; i++) {
-                if (str !== "") str += ",";
+                if (str !== "") str += ", ";
                 str += data[i];
             }
             str += ' (zip-code: ' + adr.ZipCode + ')';

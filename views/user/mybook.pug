@@ -1,0 +1,92 @@
+extends ../layout
+
+block header
+    title My Book
+    meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
+    meta(charset='utf-8')
+
+block content
+    h1 My Book
+    middle= num
+    // Modal
+    #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#delModalLabel.modal-title Delete Address
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+
+                .modal-body
+                    middle Do you want to delete book #
+                    middle#delNum *
+                    br
+                    middle#delDetail **
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='button', onclick="delCheck()") Confirm
+    br
+    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
+        | All
+    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook?status=Available';")
+        | Available
+    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook?status=Sold';")
+        | Sold
+    table#panel
+        tr
+            td
+                middle #
+            td
+                middle Book Title
+            td
+                middle Price
+            td
+                middle Date
+            td
+                middle Status
+            td
+            td
+    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/addbook';")
+        | Add New Book
+    script.
+        var bookData = !{JSON.stringify(data)};
+        $(document).ready(function () {
+            var num = !{num};
+            console.log(num);
+            for (var i = 0; i < num; i++) {
+                $('#panel').append(display(bookData[i], i));
+            }
+        });
+        function del(bookNum){
+            $('#delNum').text((parseInt(bookNum) + 1));
+            $('#delDetail').text(bookData[bookNum].bookTitle);
+        }
+        function delCheck(){
+            $.ajax({
+                data: {ID: bookData[parseInt($('#delNum').text() - 1)]._id},
+                url: '/user/deleteBook',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("finish!!!!!");
+                    window.location.href = "/user/mybook";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
+        }
+        function display(book, bookNum) {
+            return "<tr>" +
+                "<td><middle>" + (parseInt(bookNum) + 1) + "</middle></td>" +
+                "<td><middle>" + book.bookTitle + "</middle></td>" +
+                "<td><middle>" + book.price + "</middle></td>" +
+                "<td><middle>" + book.date +  "</middle></td>" +
+                "<td><middle>" + book.bookStatus +  "</middle></td>" +
+                '<td>' + '<button class="btn btn-primary btn-sm"><i class="material-icons">\n' + 'description\n' + '</i></button>' + '</td>' +
+                '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + bookNum + ')">' +
+                '<i class="material-icons">delete</i>' +'</button>' + '</td>' +
+                "</tr>";
+        }
+

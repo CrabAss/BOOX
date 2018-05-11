@@ -1,0 +1,98 @@
+extends ../layout
+
+block header
+    title Add Book
+    meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
+    meta(charset='utf-8')
+
+block content
+    h1 Add Book
+    #addModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#delModalLabel.modal-title Add Book
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+
+                .modal-body
+                    middle Do you want to add the new book?
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='button', onclick="addCheck()") Confirm
+    form
+        table#panel
+            tr
+                td
+                    middle ISBN
+                td
+                    input#ISBN(name="ISBN")
+            tr
+                td
+                    middle Book Title
+                td
+                    input#bookTitle(name="bookTitle")
+            tr
+                td
+                    middle Book Condition
+                td
+                    input#bookCondition(name='bookCondition')
+            tr
+                td
+                    middle Printing Date
+                td
+                    input#printingDate(type="date", name="printingDate")
+            tr
+                td
+                    middle Price(US dollar)
+                td
+                    input#price(name="price")
+            tr
+                td
+                    middle Payment Method
+                td
+                    .form-check.form-check-inline
+                        input#Cash.form-check-input(type='checkbox', value='', onclick='addPayment("Cash")')
+                        label.form-check-label(for='Cash')
+                            | Cash
+                    .form-check.form-check-inline
+                        input#MasterCard.form-check-input(type='checkbox', value='', onclick='addPayment("MasterCard")')
+                        label.form-check-label(for='MasterCard')
+                            | MasterCard
+                    textarea#payment.form-control(name="payment", rows='3')
+            tr
+                td
+                    middle Remark
+                td
+                    textarea#remark.form-control(name="remark", rows='3')
+            tr
+                td
+                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
+                        | Cancel
+                td
+                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#addModal', onclick="create()")
+                        | Add
+
+    script.
+        function addPayment(str) {
+            if ($("#" + str).is(':checked')) {
+                var now = $('#payment').val();
+                $('#payment').val(now + 'Support: ' + str + "\n");
+            }
+        }
+        function addCheck(){
+            $.ajax({
+                data: $("form").serialize(),
+                url: '/user/submitBook',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("finish!!!!!");
+                    window.location.href = "/user/mybook";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
+        }
