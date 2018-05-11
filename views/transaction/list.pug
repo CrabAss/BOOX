@@ -6,13 +6,9 @@ block header
 block content
   .container
     ul.list-group
-      li.list-group-item
-        .row
-          .col-sm hello
-          .col-sm K-ON
-          .col-sm world
-      li.list-group-item
-        .row
-          .col-sm hello
-          .col-sm K-ON
-          .col-sm world
+      each item in transactions
+        li.list-group-item
+          .row
+            .col-sm hello
+            .col-sm K-ON
+            .col-sm world
