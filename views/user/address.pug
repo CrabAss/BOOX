@@ -22,17 +22,18 @@ block header
     link(type='text/css', rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto:300,400,500')
 
 block content
-
-    // Button trigger modal
-    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#exampleModal')
-        | Launch demo modal
+    h1 Manage Address
+    middle= num
+    br
     // Modal
     #exampleModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
             .modal-content
-                form
+                form(role='form', action="/user/address",method="post")
                     .modal-header
-                        h5#exampleModalLabel.modal-title Modal title
+                        h5#exampleModalLabel.modal-title New Address
+                        input(style="display:none;", name="adrNum")#adrNum
+                        input(style="display:none", name="totNum")#totNum
                         button.close(type='button', data-dismiss='modal', aria-label='Close')
                             span(aria-hidden='true') ×
 
@@ -44,32 +45,154 @@ block content
                                 tr
                                     td.label Street
                                     td.slimField
-                                        input#street_number.field(placeholder='room & street number', disabled='true')
+                                        input#street_number.field(placeholder='room & street number', name="StreetNum", disabled='true')
                                     td.wideField(colspan='2')
-                                        input#route.field(placeholder='street address', disabled='true')
+                                        input#route.field(placeholder='street address', name="StreetAddress", disabled='true')
                                 tr
                                     td.label City
                                     td.wideField(colspan='3')
-                                        input#locality.field(disabled='true')
+                                        input#locality.field(disabled='true', name='City')
                                 tr
                                     td.label State
                                     td.slimField
-                                        input#administrative_area_level_1.field(disabled='true')
+                                        input#administrative_area_level_1.field(name = "State", disabled='true')
                                     td.label Zip code
                                     td.wideField
-                                        input#postal_code.field(disabled='true')
+                                        input#postal_code.field(name="ZipCode", disabled='true')
                                 tr
                                     td.label Country
                                     td.wideField(colspan='3')
-                                        input#country.field(disabled='true')
+                                        input#country.field(name = "Country", disabled='true')
                             h5#preview
                             button.btn(type='button', onclick='displayPreview()') preview
 
                     .modal-footer
                         button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-                        button.btn.btn-primary(type='submit') Save changes
+                        button.btn.btn-primary(type='button', onclick="creCheck()") Submit
+
+    // Modal
+    #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#delModalLabel.modal-title Delete Address
+                    input(style="display:none;", name="adrNum")#adrDelNum
+                    input(style="display:none", name="totNum")#totDelNum
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+
+                .modal-body
+                    middle Do you want to delete address #
+                    middle#delNum *
+                    br
+                    middle#delDetail **
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='button', onclick="delCheck()") Confirm
+
+    table#panel
+        tr
+            td
+                middle Num
+            td
+                middle Address
+
+    br
+    // Button trigger modal
+    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#exampleModal', onclick="create()")
+        | Add a new address
 
     script.
+        var adrData = !{JSON.stringify(data)};
+        $(document).ready(function () {
+            var num = !{num};
+            console.log(num);
+            for (var i = 0; i < num; i++){
+                $('#panel').append(display(adrData[i], i + 1));
+            }
+        });
+
+        //-------------create delete modify----------------
+        function create(){
+            $('#adrNum').val(0);
+            $('#totNum').val(!{num});
+        }
+        function del(num){
+            $('#delNum').text(num);
+            $('#delDetail').text( $('#adr' + num).text() );
+        }
+
+        function creCheck() {
+            $.ajax({
+                data: $("form").serialize(),
+                url: '/user/submitAddress',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("finish!!!!!");
+                    window.location.href = "/user/address";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
+            return true;
+        }
+        function delCheck() {
+            console.log(adrData[parseInt($('#delNum').text() - 1)]._id);
+            $.ajax({
+                data: {ID: adrData[parseInt($('#delNum').text() - 1)]._id},
+                url: '/user/deleteAddress',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("delete");
+                    window.location.href = "/user/address";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
+            return true;
+        }
+        //-------------End----------------
+
+        function display(adr, disNum) {
+            console.log(adr);
+            var str = "", data = new Array();
+            data[0] = adr.StreetNum;
+            data[1] = adr.StreetAddress;
+            data[2] = adr.City;
+            data[3] = adr.State;
+            data[4] = adr.Country;
+            for (var i = 0; i <= 4; i++) {
+                if (str !== "") str += ",";
+                str += data[i];
+            }
+            str += ' (zip-code: ' + adr.ZipCode + ')';
+
+            return'<tr>' +
+                '<td>' + disNum + '</td>' +
+                '<td><middle id="adr' + disNum + '" >' + str + '</middle></td>' +
+                '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + disNum + ')">X</button>' + '</td>' +
+                '</tr>';
+        }
+        function displayPreview() {
+            var str = "", data = new Array();
+            data[0] = $('#street_number').val();
+            data[1] = $('#route').val();
+            data[2] = $('#locality').val();
+            data[3] = $('#administrative_area_level_1').val();
+            data[4] = $('#country').val();
+            for (var i = 0; i <= 4; i++) {
+                if (str !== "") str += ",";
+                str += data[i];
+            }
+            $('#preview').text(str + ' (zip-code: ' + $('#postal_code').val() + ')');
+        }
+        //-------------------google auto fill API------------------------------------
         var autocomplete;
         var componentForm = {
             street_number: 'short_name',
@@ -107,17 +230,6 @@ block content
                 }
             }
         }
-        function displayPreview(){
-            var str = "", data = new Array();
-            data[0] = $('#street_number').val();
-            data[1] = $('#route').val();
-            data[2] = $('#locality').val();
-            data[3] = $('#administrative_area_level_1').val();
-            data[4] = $('#country').val();
-            for (var i = 0; i <= 4; i++){
-                if (str !== "") str += ",";
-                str += data[i];
-            }
-            $('#preview').text(str + ' (zip-code: ' + $('#postal_code').val() + ')');
-        }
+        //-------------------End------------------------------------
+
     script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCZRaTYIU7pPCdMEnXZIkXFWu7Pai_ekGg&libraries=places&callback=initAutocomplete', async='', defer='')

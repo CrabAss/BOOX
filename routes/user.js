@@ -3,6 +3,7 @@ let router = express.Router();
 
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017";
+const {ObjectId} = require('mongodb');
 
 
 const bodyParser = require("body-parser");
@@ -47,13 +48,79 @@ router.get('/profile', function(req, res, next) {
 });
 
 router.get('/address', function(req, res, next) {
-    if (req.session.sign){
+    req.session.userID = '5af52b61b238639f70ee4311';
+
+    /*if (req.session.sign){
         console.log("ok");
     }else {
         console.log("no");
         req.session.sign = 1;
+
+    }*/
+    MongoClient.connect(url, function(err, db){
+        if (err) throw err;
+        console.log("Success connect");
+
+        var dbo = db.db("web");
+        var where = {UserID: req.session.userID};
+        dbo.collection("userAddress").find(where).toArray(function(err, result) {
+            if (err) throw err;
+            if (result == ""){
+                console.log("No such user adderss");
+                res.render('user/address', { title: 'address' , status: 0, num: result.length});
+            }else{
+                console.log("Found!");
+                res.render('user/address', { title: 'address' , status: 1, data: result, num: result.length});
+            }
+        });
+        db.close();
+    });
+
+});
+
+router.post('/submitAddress', function(req, res) {
+    req.session.userID = '5af52b61b238639f70ee4311';
+
+    if (req.body.adrNum === '0'){
+        req.body.UserID = req.session.userID;
+        req.body.AddressID = parseInt(req.body.totNum) + 1;
+        delete req.body.totNum;
+        delete req.body.adrNum;
+        console.log(req.body);
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            console.log("Success connect");
+
+            var dbo = db.db("web");
+
+            dbo.collection("userAddress").insertOne(req.body,function(err, result) {
+                if (err) throw err;
+                console.log("Inserted!");
+                res.send({msg: "ok"});
+            })
+            db.close();
+        });
+    }else{
+        //update
     }
-    res.render('user/address', { title: 'address' });
+});
+router.post('/deleteAddress', function(req, res){
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("web");
+
+        var myquery = {
+            UserID: req.session.userID,
+            _id: ObjectId(req.body.ID)
+        };
+        console.log(myquery);
+        dbo.collection("userAddress").deleteOne(myquery, function(err, obj) {
+            if (err) throw err;
+            console.log("Delete success!");
+            db.close();
+            res.send({msg: "ok"});
+        });
+    });
 });
 
 router.get('/setting', function(req, res, next) {
