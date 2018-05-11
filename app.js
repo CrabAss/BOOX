@@ -10,6 +10,29 @@ let transactionRouter = require('./routes/transaction');
 let userRouter = require('./routes/user');
 
 let app = express();
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+var mongoose = require('mongoose');
+//connect to MongoDB
+mongoose.connect('mongodb://localhost/test');
+var db = mongoose.connection;
+
+//handle mongo error
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+});
+
+app.sessionMiddleware = session({
+    secret: 'work hard',
+    resave: true,
+    saveUninitialized: false,
+    store: new MongoStore({
+        mongooseConnection: db
+    })
+
+});
+
+app.use(app.sessionMiddleware);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

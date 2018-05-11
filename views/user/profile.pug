@@ -29,9 +29,9 @@ html
                 td#address ***
 
         script.
-            var ID = !{id}
-            var status = !{status}
-            var data = !{JSON.stringify(data)}
+            var ID = !{JSON.stringify(id)};
+            var status = !{status};
+            var data = !{JSON.stringify(data)};
             $('#id').text("Checking userID: " + ID)
             //console.log(ID)
             if ( status === '0' ){

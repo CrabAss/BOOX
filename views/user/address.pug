@@ -1,0 +1,123 @@
+extends ../layout
+
+block header
+    title Place Autocomplete Address Form
+    meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
+    meta(http-equiv='content-language', content='en-US')
+    meta(charset='utf-8')
+
+    style.
+        /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+        .modal-dialog{
+            margin-top: 100px;
+            max-width: 800px;
+        }
+        .pac-container, .pac-logo{
+            z-index: 2000;
+        }
+    link(type='text/css', rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto:300,400,500')
+
+block content
+
+    // Button trigger modal
+    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#exampleModal')
+        | Launch demo modal
+    // Modal
+    #exampleModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                form
+                    .modal-header
+                        h5#exampleModalLabel.modal-title Modal title
+                        button.close(type='button', data-dismiss='modal', aria-label='Close')
+                            span(aria-hidden='true') ×
+
+                    .modal-body
+                        #locationField.location
+                            input#autocomplete(placeholder='Enter your address', type='text')
+
+                            table#address
+                                tr
+                                    td.label Street
+                                    td.slimField
+                                        input#street_number.field(placeholder='room & street number', disabled='true')
+                                    td.wideField(colspan='2')
+                                        input#route.field(placeholder='street address', disabled='true')
+                                tr
+                                    td.label City
+                                    td.wideField(colspan='3')
+                                        input#locality.field(disabled='true')
+                                tr
+                                    td.label State
+                                    td.slimField
+                                        input#administrative_area_level_1.field(disabled='true')
+                                    td.label Zip code
+                                    td.wideField
+                                        input#postal_code.field(disabled='true')
+                                tr
+                                    td.label Country
+                                    td.wideField(colspan='3')
+                                        input#country.field(disabled='true')
+                            h5#preview
+                            button.btn(type='button', onclick='displayPreview()') preview
+
+                    .modal-footer
+                        button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                        button.btn.btn-primary(type='submit') Save changes
+
+    script.
+        var autocomplete;
+        var componentForm = {
+            street_number: 'short_name',
+            route: 'long_name',
+            locality: 'long_name',
+            administrative_area_level_1: 'short_name',
+            country: 'long_name',
+            postal_code: 'short_name'
+        }
+        function initAutocomplete() {
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            autocomplete = new google.maps.places.Autocomplete(
+                /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+                {types: ['geocode']});
+
+            // When the user selects an address from the dropdown, populate the address
+            // fields in the form.
+            autocomplete.addListener('place_changed', fillInAddress);
+        }
+        function fillInAddress() {
+            // Get the place details from the autocomplete object.
+            var place = autocomplete.getPlace();
+            for (var component in componentForm) {
+                document.getElementById(component).value = '';
+                document.getElementById(component).disabled = false;
+            }
+            // Get each component of the address from the place details
+            // and fill the corresponding field on the form.
+            for (var i = 0; i < place.address_components.length; i++) {
+                var addressType = place.address_components[i].types[0];
+                if (componentForm[addressType]) {
+                    var val = place.address_components[i][componentForm[addressType]];
+                    document.getElementById(addressType).value = val;
+                }
+            }
+        }
+        function displayPreview(){
+            var str = "", data = new Array();
+            data[0] = $('#street_number').val();
+            data[1] = $('#route').val();
+            data[2] = $('#locality').val();
+            data[3] = $('#administrative_area_level_1').val();
+            data[4] = $('#country').val();
+            for (var i = 0; i <= 4; i++){
+                if (str !== "") str += ",";
+                str += data[i];
+            }
+            $('#preview').text(str + ' (zip-code: ' + $('#postal_code').val() + ')');
+        }
+    script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCZRaTYIU7pPCdMEnXZIkXFWu7Pai_ekGg&libraries=places&callback=initAutocomplete', async='', defer='')

@@ -1,8 +1,17 @@
 let express = require('express');
 let router = express.Router();
+
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017";
 
+
+const bodyParser = require("body-parser");
+
+router.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+router.use(bodyParser.json());
 
 /* GET home page. */
 router.get('/profile', function(req, res, next) {
@@ -25,18 +34,30 @@ router.get('/profile', function(req, res, next) {
                 if (pri[1] === '0') delete result[0].Gender;
                 if (pri[2] === '0') delete result[0].Birth;
                 if (pri[3] === '0') {
-                    console.log("no Address");
-                    res.render('user/profile', { title: 'profile' , status: 1, id: req.query.id, data: result[0], adr: Adr});
+                    console.log("no Address ");
+                    res.render('user/profile', { title: 'profile' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr});
                 }else{
 
                 }
-                console.log(pri[0]);
-
             }
         });
         console.log("Finish");
         db.close();
     });
+});
+
+router.get('/address', function(req, res, next) {
+    if (req.session.sign){
+        console.log("ok");
+    }else {
+        console.log("no");
+        req.session.sign = 1;
+    }
+    res.render('user/address', { title: 'address' });
+});
+
+router.get('/setting', function(req, res, next) {
+    res.render('user/setting', { title: 'setting' });
 });
 
 module.exports = router;
