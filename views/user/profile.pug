@@ -1,5 +1,60 @@
 html
     head
+        script(src='https://code.jquery.com/jquery-3.3.1.min.js', integrity='sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=', crossorigin='anonymous')
         title xxs
     body
-        h1 User Profile
+        h1#id User Profile
+        p#result searching
+        table
+            tr
+                td Username
+                td#username ***
+            tr
+                td Name
+                td#name ***
+            tr
+                td Gender
+                td#gender ***
+            tr
+                td Birth
+                td#birth ***
+            tr
+                td Phone
+                td#phone ***
+            tr
+                td Email
+                td#email ***
+            tr
+                td Address
+                td#address ***
+
+        script.
+            var ID = !{id}
+            var status = !{status}
+            var data = !{JSON.stringify(data)}
+            $('#id').text("Checking userID: " + ID)
+            //console.log(ID)
+            if ( status === '0' ){
+                $('#result').text("No such user!")
+            }else{
+                $('#result').text("Found!")
+                if (typeof data.Username !== "undefined")
+                    $('#username').text(data.Username)
+
+                if (typeof data.FirstName !== "undefined")
+                    $('#Name').text(data.FirstName + data.LastName)
+
+                if (typeof data.Gender !== "undefined")
+                    $('#gender').text(data.Gender)
+
+                if (typeof data.Birth !== "undefined")
+                    $('#birth').text(data.Birth)
+
+                if (typeof data.Phone !== "undefined")
+                    $('#phone').text(data.Phone)
+
+                if (typeof data.Email !== "undefined")
+                    $('#email').text(data.Email)
+
+
+            }
