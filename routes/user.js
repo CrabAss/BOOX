@@ -127,4 +127,25 @@ router.get('/setting', function(req, res, next) {
     res.render('user/setting', { title: 'setting' });
 });
 
+router.get('/addbook', function(req, res, next) {
+    res.render('user/addbook', { title: 'addbook' });
+});
+
+router.get('/mybook', function(req, res, next) {
+    MongoClient.connect(url, function(err, db){
+        if (err) throw err;
+        console.log("Success connect");
+
+        var dbo = db.db("web");
+        var where = {sellerID: req.session.userID};
+        console.log(where);
+        dbo.collection("book").find(where).toArray(function(err, result) {
+            if (err) throw err;
+            console.log("Found!");
+            res.render('user/mybook', { title: 'mybook', data: result, num: result.length});
+        });
+        db.close();
+    });
+});
+
 module.exports = router;

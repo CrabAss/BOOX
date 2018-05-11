@@ -1,0 +1,36 @@
+extends ../layout
+
+block header
+    title My Book
+    meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
+    meta(charset='utf-8')
+
+block content
+    h1 My Book
+    middle= num
+    table#panel
+        tr
+            td
+                middle Book Title
+            td
+                middle Price
+            td
+                middle Date
+    script.
+        var bookData = !{JSON.stringify(data)};
+        $(document).ready(function () {
+            var num = !{num};
+            console.log(num);
+            for (var i = 0; i < num; i++) {
+                $('#panel').append(display(bookData[i]));
+            }
+        });
+
+        function display(book) {
+            return "<tr>" +
+                "<td><middle>" + book.Title + "</middle></td>" +
+                "<td><middle>" + book.Title + "</middle></td>" +
+                "<td><middle>" + +  "</middle></td>" +
+                "</tr>";
+        }
+
