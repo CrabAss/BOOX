@@ -36,6 +36,30 @@ let transactionSchema = new mongoose.Schema({
 });
 
 
+transactionSchema.methods.toAccepted = function () {
+  // SELLER
+  this.transactionStatus = "Accepted";
+  this.readStatus = false;
+};
+
+transactionSchema.methods.toRejected = function () {
+  // SELLER
+  this.transactionStatus = "Rejected";
+  this.readStatus = false;
+};
+
+transactionSchema.methods.toSent = function () {
+  // SELLER
+  this.transactionStatus = "Sent";
+  this.readStatus = false;
+};
+
+transactionSchema.methods.toComplete = function () {
+  // BUYER
+  this.transactionStatus = "Complete";
+// todo transactionStatus变成Complete时 bookStatus也变成Sold
+  this.readStatus = false;
+};
 
 let Transaction = mongoose.model('Transaction', transactionSchema);
 module.exports = Transaction;

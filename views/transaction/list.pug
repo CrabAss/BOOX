@@ -5,10 +5,18 @@ block header
 
 block content
   .container
-    ul.list-group
-      each item in transactions
-        li.list-group-item
+    h1 Transactions
+    .list-group
+      .list-group-item
+        .row
+          .col-sm Transaction ID
+          .col-sm Record ID
+          .col-sm Another User ID
+          .col-sm Status
+      each item in transactionList
+        a.list-group-item.list-group-item-action(href='/transaction/detail/'+item.transactionID)
           .row
-            .col-sm hello
-            .col-sm K-ON
-            .col-sm world
+            .col-sm= item.transactionID
+            .col-sm= item.recordID
+            .col-sm= item.anotherUserID
+            .col-sm= item.transactionStatus

@@ -5,7 +5,64 @@ block header
 
 block content
   .container
+    h1.mb-5 Transaction Detail
     dl.row
-      each val, index in detail
-        dt.col-sm-3= index
-        dd.col-sm-9= val
+      dt.col-sm-3 Buyer
+      dd.col-sm-9
+        dl.row
+          if buyer.fullName
+            dt.col-sm-3 Name
+            dd.col-sm-9= buyer.fullName
+            dt.col-sm-3 Phone
+            dd.col-sm-9= buyer.phone
+            dt.col-sm-3 Email
+            dd.col-sm-9= buyer.email
+          dt.col-sm-3 Address
+          dd.col-sm-9= buyer.address
+      if seller
+        dt.col-sm-3 Seller
+        dd.col-sm-9
+          dl.row
+            dt.col-sm-3 Name
+            dd.col-sm-9= seller.fullName
+            dt.col-sm-3 Phone
+            dd.col-sm-9= seller.phone
+            dt.col-sm-3 Email
+            dd.col-sm-9= seller.email
+      dt.col-sm-3 Book
+      dd.col-sm-9
+        dl.row
+          dt.col-sm-3 Title
+          dd.col-sm-9= book.title
+          dt.col-sm-3 Price
+          dd.col-sm-9= book.price
+          dt.col-sm-3 Payment Method
+          dd.col-sm-9= book.paymentMethod
+    case status
+      when "Created"
+        if buyer.fullName
+          button.btn.btn-success Accept
+          button.btn.btn-danger.ml-2 Reject
+        else
+          .alert.alert-primary(role='alert')
+            | Waiting for seller to accept or reject this transaction.
+      when "Accepted"
+        if buyer.fullName
+          button.btn.btn-primary Declare Delivery
+        else
+          .alert.alert-primary(role='alert')
+            | Your transaction is accepted by seller. Waiting for seller to deliver the book!
+      when "Rejected"
+        .alert.alert-secondary(role='alert')
+          | This transaction is rejected by seller.
+      when "Sent"
+        if buyer.fullName
+          .alert.alert-primary(role='alert')
+            | Waiting for buyer to receive the book.
+        else
+          button.btn.btn-primary Declare Book Receiving
+      when "Complete"
+        .alert.alert-primary(role='alert')
+          | This transaction is complete.
+
+
