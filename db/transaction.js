@@ -1,7 +1,7 @@
 let mongoose = require("mongoose");
 
 let transactionSchema = new mongoose.Schema({
-  sellerID: {
+  recordID: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
@@ -9,7 +9,7 @@ let transactionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
-  recordID: {
+  sellerID: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
@@ -34,6 +34,7 @@ let transactionSchema = new mongoose.Schema({
     default: "Created"
   }
 });
+
 
 
 let Transaction = mongoose.model('Transaction', transactionSchema);

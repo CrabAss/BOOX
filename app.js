@@ -3,6 +3,8 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+var bodyParser = require('body-parser');
+
 
 let indexRouter = require('./routes/index');
 let bookRouter = require('./routes/book');
@@ -14,7 +16,7 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 //connect to MongoDB
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/web');
 var db = mongoose.connection;
 
 //handle mongo error
@@ -39,8 +41,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

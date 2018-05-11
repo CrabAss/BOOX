@@ -1,0 +1,11 @@
+extends ../layout
+
+block header
+  title Transaction Detail
+
+block content
+  .container
+    dl.row
+      each val, index in detail
+        dt.col-sm-3= index
+        dd.col-sm-9= val
