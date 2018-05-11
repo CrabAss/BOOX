@@ -20,60 +20,79 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button.btn.btn-primary(type='button', onclick="addCheck()") Confirm
-    table#panel
-        tr
-            td
-                middle ISBN
-            td
-                input
-        tr
-            td
-                middle Book Title
-            td
-                input
-        tr
-            td
-                middle Book Condition
-            td
-                input
-        tr
-            td
-                middle Printing Date
-            td
-                input(type="date")
-        tr
-            td
-                middle Price(US dollar)
-            td
-                input
-        tr
-            td
-                middle Payment Method
-            td
-                .form-check.form-check-inline
-                    input#Cash.form-check-input(type='checkbox', value='', onclick='addPayment("Cash")')
-                    label.form-check-label(for='Cash')
-                        | Cash
-                .form-check.form-check-inline
-                    input#MasterCard.form-check-input(type='checkbox', value='', onclick='addPayment("MasterCard")')
-                    label.form-check-label(for='MasterCard')
-                        | MasterCard
-                textarea#payment.form-control(rows='3')
-        tr
-            td
-                middle Remark
-            td
-                textarea#remark.form-control(rows='3')
-        tr
-            td
-                middle
-            td
-                button.btn.btn-primary(type='button', data-toggle='modal', data-target='#addModal', onclick="create()")
-                    | Add
+    form
+        table#panel
+            tr
+                td
+                    middle ISBN
+                td
+                    input#ISBN(name="ISBN")
+            tr
+                td
+                    middle Book Title
+                td
+                    input#bookTitle(name="bookTitle")
+            tr
+                td
+                    middle Book Condition
+                td
+                    input#bookCondition(name='bookCondition')
+            tr
+                td
+                    middle Printing Date
+                td
+                    input#printingDate(type="date", name="printingDate")
+            tr
+                td
+                    middle Price(US dollar)
+                td
+                    input#price(name="price")
+            tr
+                td
+                    middle Payment Method
+                td
+                    .form-check.form-check-inline
+                        input#Cash.form-check-input(type='checkbox', value='', onclick='addPayment("Cash")')
+                        label.form-check-label(for='Cash')
+                            | Cash
+                    .form-check.form-check-inline
+                        input#MasterCard.form-check-input(type='checkbox', value='', onclick='addPayment("MasterCard")')
+                        label.form-check-label(for='MasterCard')
+                            | MasterCard
+                    textarea#payment.form-control(name="payment", rows='3')
+            tr
+                td
+                    middle Remark
+                td
+                    textarea#remark.form-control(name="remark", rows='3')
+            tr
+                td
+                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
+                        | Cancel
+                td
+                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#addModal', onclick="create()")
+                        | Add
 
     script.
         function addPayment(str) {
             if ($("#" + str).is(':checked')) {
-                $('#payment').append('Support: ' + str + "\n");
+                var now = $('#payment').val();
+                $('#payment').val(now + 'Support: ' + str + "\n");
             }
+        }
+        function addCheck(){
+            $.ajax({
+                data: $("form").serialize(),
+                url: '/user/submitBook',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("finish!!!!!");
+                    window.location.href = "/user/mybook";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
         }

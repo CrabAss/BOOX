@@ -55,7 +55,6 @@ router.get('/address', function(req, res, next) {
     }else {
         console.log("no");
         req.session.sign = 1;
-
     }*/
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
@@ -124,13 +123,67 @@ router.post('/deleteAddress', function(req, res){
 });
 
 router.get('/setting', function(req, res, next) {
-    res.render('user/setting', { title: 'setting' });
+    MongoClient.connect(url, function(err, db){
+        if (err) throw err;
+        console.log("Success connect");
+
+        var dbo = db.db("web");
+        var where = {UserID: req.query.id};
+        dbo.collection("userAccount").find(where).toArray(function(err, result) {
+            if (err) throw err;
+            console.log("Found!");
+            var pri = result[0].PrivacyBits;
+            delete result[0].password;
+            if (pri[3] === '0') {
+                console.log("no Address ");
+                res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr});
+            }
+        });
+        console.log("Finish");
+        db.close();
+    });
 });
 
 router.get('/addbook', function(req, res, next) {
     res.render('user/addbook', { title: 'addbook' });
 });
+router.post('/submitBook', function(req, res) {
+    req.body.sellerID = req.session.userID;
+    req.body.date = (new Date()).toISOString().split('T')[0];
+    req.body.bookStatus = "Available";
 
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("web");
+
+        console.log(req.body);
+        dbo.collection("book").insertOne(req.body,function(err, result) {
+            if (err) throw err;
+            console.log("Inserted!");
+            res.send({msg: "ok"});
+        })
+        db.close();
+    });
+});
+
+router.post('/deleteBook', function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("web");
+
+        var myquery = {
+            sellerID: req.session.userID,
+            _id: ObjectId(req.body.ID)
+        };
+        console.log(myquery);
+        dbo.collection("book").deleteOne(myquery, function(err, obj) {
+            if (err) throw err;
+            console.log("Delete success!");
+            db.close();
+            res.send({msg: "ok"});
+        });
+    });
+});
 router.get('/mybook', function(req, res, next) {
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
@@ -138,11 +191,71 @@ router.get('/mybook', function(req, res, next) {
 
         var dbo = db.db("web");
         var where = {sellerID: req.session.userID};
+        if (req.query.status){
+            where.bookStatus = req.query.status;
+        }
         console.log(where);
         dbo.collection("book").find(where).toArray(function(err, result) {
             if (err) throw err;
             console.log("Found!");
             res.render('user/mybook', { title: 'mybook', data: result, num: result.length});
+        });
+        db.close();
+    });
+});
+var ISBresult;
+function ISBNtoTitle(data, index, res){
+    if (index === data.length){
+        console.log(data);
+
+        res.render('user/favorite', { title: 'favorite', data: data, num: data.length});
+        return;
+    }
+    MongoClient.connect(url, function(err, db){
+        if (err) throw err;
+        var dbo = db.db("web");
+        var where = {ISBN: data[index].ISBN};
+
+        dbo.collection("book").find(where).toArray(function(err, result) {
+            if (err) throw err;
+            data[index].bookTitle = result[0].bookTitle;
+            ISBNtoTitle(data, (parseInt(index) + 1), res);
+        });
+        db.close();
+    });
+}
+
+
+router.post('/deleteFavorite', function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("web");
+
+        var myquery = {
+            userID: req.session.userID,
+            _id: ObjectId(req.body.ID)
+        };
+        console.log(myquery);
+        dbo.collection("favorite").deleteOne(myquery, function(err, obj) {
+            if (err) throw err;
+            console.log("Delete success!");
+            db.close();
+            res.send({msg: "ok"});
+        });
+    });
+});
+router.get('/favorite', function(req, res, next) {
+    MongoClient.connect(url, function(err, db){
+        if (err) throw err;
+        console.log("Success connect");
+
+        var dbo = db.db("web");
+        var where = {userID: req.session.userID};
+
+        console.log(where);
+        dbo.collection("favorite").find(where).toArray(function(err, result) {
+            if (err) throw err;
+            ISBNtoTitle(result, 0, res);
         });
         db.close();
     });

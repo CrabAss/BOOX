@@ -1,0 +1,76 @@
+extends ../layout
+
+block header
+    title favorite
+
+block content
+    h1 favorite
+    middle= num
+    // Modal
+    #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#delModalLabel.modal-title Delete Address
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+
+                .modal-body
+                    middle Do you want to delete favorite #
+                    middle#delNum *
+                    br
+                    middle#delDetail **
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='button', onclick="delCheck()") Confirm
+    table#panel
+        tr
+            td
+                middle #
+            td
+                middle Book Title
+            td
+                middle ISBN
+            td
+                middle Date
+            td
+
+    script.
+        var favData = !{JSON.stringify(data)};
+        $(document).ready(function () {
+            var num =!{num};
+            console.log(num);
+             for (var i = 0; i < num; i++) {
+                 $('#panel').append(display(favData[i], i));
+             }
+        });
+        function del(favNum) {
+            $('#delNum').text((parseInt(favNum) + 1));
+            $('#delDetail').text(favData[favNum].bookTitle);
+        }
+        function delCheck() {
+            $.ajax({
+                data: {ID: favData[parseInt($('#delNum').text() - 1)]._id},
+                url: '/user/deleteFavorite',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("finish!!!!!");
+                    window.location.href = "/user/favorite";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
+        }
+        function display(favData, favNum) {
+            return "<tr>" +
+                "<td><middle>" + (parseInt(favNum) + 1) + "</middle></td>" +
+                "<td><middle>" + favData.bookTitle + "</middle></td>" +
+                "<td><middle>" + favData.ISBN + "</middle></td>" +
+                "<td><middle>" + favData.date + "</middle></td>" +
+                '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + favNum + ')">' +
+                '<i class="material-icons">delete</i>' + '</button>' + '</td>' +
+                "</tr>";
+        }
