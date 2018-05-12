@@ -1,0 +1,47 @@
+extends ../layout.pug
+
+block content
+    table
+        tr
+            form(method="GET" action="http://172.104.175.75:3000/book/search")
+                td: input(type="text" name="ISBN" id="ISBN")
+                td: input(type="text" name="title" id="title")
+                td: input(type="text" name="tags" id="tags")
+                td: input(type="submit" name="submit")
+
+    table
+        tr
+            td cover
+            td title
+            td author
+        each ele in list
+            tr
+                td: image(id=ele+"cover")
+                td: a(id=ele+"title")
+                td(id=ele+"author")
+
+    script.
+
+        list = !{JSON.stringify(list)};
+        que = !{JSON.stringify(query)};
+        if (que) {
+            if (que.ISBN) $("#ISBN").val(que.ISBN);
+            if (que.title) $("#title").val(que.title);
+            if (que.tags) $("#tags").val(que.tags);
+        }
+
+        console.log(list);
+        for (i = 0; i < list.length; i++) {
+            var book = getapi(list[i]);
+            $("#"+list[i]+"cover").attr("src", book.imageLinks.thumbnail);
+            $("#"+list[i]+"title").text(book.title).attr("href", "detail?isbn="+list[i].ISBN);
+            $("#"+list[i]+"author").text(book.authors.join(", "));
+        }
+
+        function getapi(isbn) {
+            var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+            return $.ajax({
+                url: url,
+                async: false
+            }).responseJSON.items[0].volumeInfo;
+        }
