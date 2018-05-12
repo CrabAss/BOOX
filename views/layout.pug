@@ -6,7 +6,21 @@ html
         link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css', integrity='sha256-Md8eaeo67OiouuXAi8t/Xpd8t2+IaJezATVTWbZqSOw=', crossorigin='anonymous')
         script(src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.bundle.min.js', integrity='sha256-ko+X8xDY92jF49Uh47HOLP8Vb5zGDF0J+tdy9KLEP1I=', crossorigin='anonymous')
         link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
+        style.
+            body {
+                background-image: url("/img/background.jpg");
+                background-size: cover;
+            }
+            .card{
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                border-radius: 25px;
+            }
 
         block header
+
     body
-        block content
+        .container
+            .card.p-5
+               .row(style='margin-top:20px')
+                    .col
+                        block content

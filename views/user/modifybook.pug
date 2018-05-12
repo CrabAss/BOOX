@@ -1,40 +1,35 @@
 extends ../layout
 
 block header
-    title Add Book
-    meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
-    meta(charset='utf-8')
+    title Modify Book
 
 block content
-    h1 Add Book
-    #addModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+    h1 Modify Book
+    #modModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
-                    h5#delModalLabel.modal-title Add Book
+                    h5#delModalLabel.modal-title Modify Book
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                         span(aria-hidden='true') ×
 
                 .modal-body
-                    middle Do you want to add the new book?
+                    middle Do you want to modify your book?
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-                    button.btn.btn-primary(type='button', onclick="addCheck()") Confirm
+                    button.btn.btn-primary(type='button', onclick="modCheck()") Confirm
     form
         table#panel
             tr
                 td
                     middle ISBN
                 td
-                    input#ISBN.form-control(name="ISBN")
+                    input#ISBN.form-control-plaintext(readonly="")
             tr
                 td
                     middle Book Title
                 td
-                    input#bookTitle.form-control(name="bookTitle", readonly="")
-                td
-                    button.btn.btn-primary(type='button', onclick="checkBook();")
-                        | Check
+                    input#bookTitle.form-control-plaintext(readonly="")
             tr
                 td
                     middle Book Condition
@@ -73,24 +68,27 @@ block content
                     button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
                         | Cancel
                 td
-                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#addModal')
-                        | Add
-
+                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#modModal')
+                        | Modify
     script.
-        function addPayment(str) {
-            if ($("#" + str).is(':checked')) {
-                var now = $('#payment').val();
-                $('#payment').val(now + 'Support: ' + str + "\n");
-            }
-        }
-        function addCheck(){
-            if (checkBook() == false){
-                alert("Book Not Found!");
-                return;
-            }
+        var data = !{JSON.stringify(data)};
+        $(document).ready(function () {
+            console.log(data);
+            if (typeof data.ISBN !== "undefined") $('#ISBN').val(data.ISBN)
+            if (typeof data.bookTitle !== "undefined") $('#bookTitle').val(data.bookTitle)
+            if (typeof data.bookCondition !== "undefined") $('#bookCondition').val(data.bookCondition)
+            if (typeof data.printingDate !== "undefined") $('#printingDate').val(data.printingDate)
+            if (typeof data.price !== "undefined") $('#price').val(data.price)
+            if (typeof data.payment !== "undefined") $('#payment').val(data.payment)
+            if (typeof data.remark !== "undefined") $('#remark').val(data.remark)
+        });
+        function modCheck(){
+            var modData = $("form").serialize();
+            modData += "&ID=" + data._id;
+
             $.ajax({
-                data: $("form").serialize(),
-                url: '/user/submitBook',
+                data: modData,
+                url: '/user/modifyBook',
                 dataType: 'json',
                 type: 'POST',
                 cache: false,
@@ -103,24 +101,9 @@ block content
                 }
             });
         }
-        function checkBook(){
-            console.log("Check");
-            try {
-                var book = getapi($('#ISBN').val());
-                console.log(book);
-                $("#bookTitle").val(book.title);
-                return true;
-            }catch (err){
-                $("#bookTitle").val("No Such Book!");
-                return false;
+        function addPayment(str) {
+            if ($("#" + str).is(':checked')) {
+                var now = $('#payment').val();
+                $('#payment').val(now + 'Support: ' + str + "\n");
             }
-        }
-        function getapi(ISBN) {
-            var isbn = ISBN;
-            var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
-            var data = $.ajax({
-                url: url,
-                async: false
-            }).responseJSON.items[0].volumeInfo;
-            return data;
         }
