@@ -94,7 +94,6 @@ router.post('/login', function(req, res){
 });
 
 router.get('/signup', function(req, res, next) {
-
   res.render('signup', {flag : req.session.flag});
 });
 

@@ -10,57 +10,46 @@ block content
 
 	#account-form-container.center-vertical
 		form(method="post")#account-form.form-horizontal.well
-			h2
+			h2 Sign Up
+			h6.mt-5 Choose your username & password
 			hr
-			h6#sub2
-			.form-group
-				label.control-label.col-sm-3 Username
-				.col-sm-9
+			.form-row
+				.form-group.col-md-6
+					label(for='user-tf') Username
 					input.form-control#user-tf(type='text', name='user', value= user.user).disabled
-
-			.form-group
-				label.control-label.col-sm-3 Password
-				.col-sm-9
+				.form-group.col-md-6
+					label(for='pass-tf') Password
 					input.form-control#pass-tf(type='password', name='pass', value='')
-
-			.form-group
-				label.control-label.col-sm-3 Email
-				.col-sm-9
+			.form-row
+				.form-group.col-md-6
+					label(for='email-tf') Email
 					input.form-control#email-tf(type='email', name='email', value= user.email)
-
-			.form-group
-				label.control-label.col-sm-3 Phone
-				.col-sm-9
+				.form-group.col-md-6
+					label(for='phone-tf') Phone
 					input.form-control#phone-tf(type='number', name='phone')
 
+			h6.mt-4 Please tell us a little about yourself.
 			hr
-			h6#sub1 Please tell us a little about yourself.
-			.form-group
-				label.control-label.col-sm-3 First Name
-				.col-sm-9
+			.form-row
+				.form-group.col-md-6
+					label(for='fname-tf') First Name
 					input.form-control#fname-tf(type='text', name='fname', value= user.fname)
-
-			.form-group
-				label.control-label.col-sm-3 Last Name
-				.col-sm-9
+				.form-group.col-md-6
+					label(for='lname-tf') Last Name
 					input.form-control#lname-tf(type='text', name='lname', value= user.lname)
-
-			.form-group
-				label.control-label.col-sm-3 Gender
-				.col-sm-9
-					select.form-control#gender-tf(name='gender')
-						option(value='Male' selected='Male' == user.gender) Male
-						option(value='Female' selected='Female' == user.gender) Female
-						option(value='Other' selected='Other' == user.gender) Other
-
-			.form-group
-				label.control-label.col-sm-3 Year Birth
-				.col-sm-9
+			.form-row
+				.form-group.col-md-6
+					label(for='gender-tf') Gender
+					select.custom-select#gender-tf(name='gender')
+						option(value='Male' selected='Male' === user.gender) Male
+						option(value='Female' selected='Female' === user.gender) Female
+						option(value='Other' selected='Other' === user.gender) Other
+				.form-group.col-md-6
+					label(for='birth-tf') Date of Birth
 					input.form-control#birth-tf(type='date', name='birth', value= user.birth)
-
-			hr
-			button(type='button')#account-form-btn1.btn.btn-default
-			button(type='button')#account-form-btn2.btn.btn-primary
+			.d-flex.flex-row-reverse.mt-4
+				button(type='button')#account-form-btn2.btn.btn-primary.ml-3.px-3 Submit
+				button(type='button')#account-form-btn1.btn.btn-secondary.px-3 Cancel
 
 
 	// display form errors in a custom modal window //

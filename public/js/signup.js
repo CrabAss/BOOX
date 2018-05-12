@@ -30,26 +30,16 @@ validateEmail = function(e) {
     return re.test(e);
 }
 
-validateForm = function(a)
-{
+validateForm = function(a) {
     let e = [];
-    if ($('#user-tf').val()==='') { e.push('Please Enter A Name<br>');
-    }
-    if ($('#pass-tf').val()==='') { e.push('Please Enter A Password<br>');
-    }
-    if (!validateEmail($('#email-tf').val())) { e.push('Please Enter A Email<br>');
-    }
-    if ($('#phone-tf').val()==='') { e.push('Please Enter A Phone');
-    }
+    if ($('#user-tf').val() === '') { e.push('Please enter a username<br>'); }
+    if ($('#pass-tf').val() === '') { e.push('Please enter a password<br>'); }
+    if (!validateEmail($('#email-tf').val())) { e.push('Please enter an email address<br>'); }
+    if ($('#phone-tf').val() === '') { e.push('Please enter a phone number'); }
     if (e.length) showErrors(e);
     return e.length === 0;
-}
+};
 
-    $('#account-form h2').text('Signup');
-	$('#account-form #sub1').text('Please tell us a little about yourself');
-	$('#account-form #sub2').text('Choose your username & password');
-	$('#account-form-btn1').html('Cancel');
-	$('#account-form-btn2').html('Submit');
 	$('#account-form-btn2').addClass('btn-primary');
 	
 // setup the alert that displays when an account is successfully created //
@@ -68,10 +58,10 @@ validateForm = function(a)
                     } else if (e.responseText === 'phone-taken') {
                         showInvalidPhone();
                     }
-                })
+                });
             $('#name-tf').focus();
         }
-    })
+    });
     $('#account-form-btn1').click(function () {
         window.location.href = '/login';
     });
