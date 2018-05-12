@@ -106,7 +106,7 @@ router.post('/submitAddress', function(req, res) {
                 if (err) throw err;
                 // console.log("Inserted!");
                 res.send({msg: "ok"});
-            })
+            });
             db.close();
         });
     }else{
@@ -246,7 +246,7 @@ router.post('/submitBook', function(req, res) {
             if (err) throw err;
             // console.log("Inserted!");
             res.send({msg: "ok"});
-        })
+        });
         db.close();
     });
 });
