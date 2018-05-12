@@ -1,4 +1,8 @@
 let mongoose = require("mongoose");
+let MongoClient = require('mongodb').MongoClient;
+const url = "mongodb://localhost:27017";
+const {ObjectId} = require('mongodb');
+
 
 let transactionSchema = new mongoose.Schema({
   recordID: {
@@ -35,7 +39,7 @@ let transactionSchema = new mongoose.Schema({
   transactionStatus: {
     type: String,
     required: true,
-    enum: ["Created", "Accepted", "Rejected", "Sent", "Complete"],
+    enum: ["Created", "Accepted", "Rejected", "Sent", "Complete", "Cancelled"],
     default: "Created"
   }
 });
@@ -53,6 +57,13 @@ transactionSchema.methods.toRejected = function () {
   this.transactionStatus = "Rejected";
   this.buyerIsRead = false;
   this.save();
+  MongoClient.connect(url, function (err, mongo) {
+    if (err) throw err;
+    let db = mongo.db("web");
+    db.collection("book").updateOne({_id: ObjectId(this.recordID)}, {$set: {bookStatus: "Available"}}, function(err, result) {
+      if (err) throw err;
+    });
+  });
 };
 
 transactionSchema.methods.toSent = function () {
@@ -62,10 +73,34 @@ transactionSchema.methods.toSent = function () {
   this.save();
 };
 
+transactionSchema.methods.toCancelled = function (isBuyerInitiating) {
+  this.transactionStatus = "Cancelled";
+  if (isBuyerInitiating) {
+    this.sellerIsRead = false;
+  } else {
+    this.buyerIsRead = false;
+  }
+  this.save();
+  MongoClient.connect(url, function (err, mongo) {
+    if (err) throw err;
+    let db = mongo.db("web");
+    db.collection("book").updateOne({_id: ObjectId(this.recordID)}, {$set: {bookStatus: "Available"}}, function(err, result) {
+      if (err) throw err;
+    });
+  });
+};
+
 transactionSchema.methods.toComplete = function () {
   // BUYER
   this.transactionStatus = "Complete";
 // todo transactionStatus变成Complete时 bookStatus也变成Sold
+  MongoClient.connect(url, function (err, mongo) {
+    if (err) throw err;
+    let db = mongo.db("web");
+    db.collection("book").updateOne({_id: ObjectId(this.recordID)}, {$set: {bookStatus: "Sold"}}, function(err, result) {
+      if (err) throw err;
+    });
+  });
   this.sellerIsRead = false;
   this.save();
 };
