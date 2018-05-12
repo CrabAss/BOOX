@@ -57,13 +57,6 @@ transactionSchema.methods.toRejected = function () {
   this.transactionStatus = "Rejected";
   this.buyerIsRead = false;
   this.save();
-  MongoClient.connect(url, function (err, mongo) {
-    if (err) throw err;
-    let db = mongo.db("web");
-    db.collection("book").updateOne({_id: ObjectId(this.recordID)}, {$set: {bookStatus: "Available"}}, function(err, result) {
-      if (err) throw err;
-    });
-  });
 };
 
 transactionSchema.methods.toSent = function () {
@@ -81,26 +74,11 @@ transactionSchema.methods.toCancelled = function (isBuyerInitiating) {
     this.buyerIsRead = false;
   }
   this.save();
-  MongoClient.connect(url, function (err, mongo) {
-    if (err) throw err;
-    let db = mongo.db("web");
-    db.collection("book").updateOne({_id: ObjectId(this.recordID)}, {$set: {bookStatus: "Available"}}, function(err, result) {
-      if (err) throw err;
-    });
-  });
 };
 
 transactionSchema.methods.toComplete = function () {
   // BUYER
   this.transactionStatus = "Complete";
-// todo transactionStatus变成Complete时 bookStatus也变成Sold
-  MongoClient.connect(url, function (err, mongo) {
-    if (err) throw err;
-    let db = mongo.db("web");
-    db.collection("book").updateOne({_id: ObjectId(this.recordID)}, {$set: {bookStatus: "Sold"}}, function(err, result) {
-      if (err) throw err;
-    });
-  });
   this.sellerIsRead = false;
   this.save();
 };

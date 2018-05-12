@@ -32,8 +32,8 @@ router.get('/list/buy', function(req, res, next) {
         transactionStatus: req.query.type === "active" ?
           {$in: ["Created", "Accepted", "Sent"]} : (
             req.query.type === "inactive" ?
-              {$in: ["Rejected", "Finished", "Complete"]} :
-              {$in: ["Created", "Accepted", "Sent", "Rejected", "Finished", "Complete"]}
+              {$in: ["Rejected", "Cancelled", "Complete"]} :
+              {$in: ["Created", "Accepted", "Sent", "Rejected", "Cancelled", "Complete"]}
           )
       }},
       {$lookup: {
@@ -67,11 +67,20 @@ router.get('/list/buy', function(req, res, next) {
 
 router.get('/list/sell', function(req, res, next) {
   req.session.userID = '5af52b61b238639f70ee4311';
+  if (!req.query.type) req.query.type = "active";
   MongoClient.connect(url, function (err, mongo) {
     if (err) throw err;
     let db = mongo.db("web");
     db.collection("transactions").aggregate([
-      {$match: {sellerID: ObjectId(req.session.userID)}},
+      {$match: {
+        sellerID: ObjectId(req.session.userID),
+        transactionStatus: req.query.type === "active" ?
+          {$in: ["Created", "Accepted", "Sent"]} : (
+            req.query.type === "inactive" ?
+              {$in: ["Rejected", "Cancelled", "Complete"]} :
+              {$in: ["Created", "Accepted", "Sent", "Rejected", "Cancelled", "Complete"]}
+          )
+      }},
       {$lookup: {
           from: "book",
           localField: "recordID",
@@ -96,7 +105,7 @@ router.get('/list/sell', function(req, res, next) {
         })
       });
       // console.log(transactionList);
-      res.render('transaction/list', {transactionList: transactionList, isBuyer: false});
+      res.render('transaction/list', {transactionList: transactionList, isBuyer: false, type: req.query.type});
     });
   });
 
@@ -253,12 +262,33 @@ router.post('/detail/:transactionID', function (req, res, next) {
       transaction.toAccepted();
     } else if (req.body.action === "Reject") {
       transaction.toRejected();
+      MongoClient.connect(url, function (err, mongo) {
+        if (err) throw err;
+        let db = mongo.db("web");
+        db.collection("book").updateOne({_id: ObjectId(transaction.recordID)}, {$set: {bookStatus: "Available"}}, function(err, result) {
+          if (err) throw err;
+        });
+      });
     } else if (req.body.action === "Sent") {
       transaction.toSent();
     } else if (req.body.action === "Complete") {
       transaction.toComplete();
+      MongoClient.connect(url, function (err, mongo) {
+        if (err) throw err;
+        let db = mongo.db("web");
+        db.collection("book").updateOne({_id: ObjectId(transaction.recordID)}, {$set: {bookStatus: "Sold"}}, function(err, result) {
+          if (err) throw err;
+        });
+      });
     } else if (req.body.action === "Cancel") {
       transaction.toCancelled();
+      MongoClient.connect(url, function (err, mongo) {
+        if (err) throw err;
+        let db = mongo.db("web");
+        db.collection("book").updateOne({_id: ObjectId(transaction.recordID)}, {$set: {bookStatus: "Available"}}, function(err, result) {
+          if (err) throw err;
+        });
+      });
     }
     res.redirect("/transaction/detail/" + req.params.transactionID);
   });
