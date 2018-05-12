@@ -94,6 +94,32 @@ router.get('/list/sell', function(req, res, next) {
 });
 
 router.get('/new/:recordID', function (req, res, next) {
+  req.session.userID = '5af52b61b238639f70ee4311';
+
+  /*if (req.session.sign){
+      console.log("ok");
+  }else {
+      console.log("no");
+      req.session.sign = 1;
+  }*/
+  MongoClient.connect(url, function(err, db){
+    if (err) throw err;
+    console.log("Success connect");
+
+    let dbo = db.db("web");
+    let where = {UserID: req.session.userID};
+    dbo.collection("userAddress").find(where).toArray(function(err, result) {
+      if (err) throw err;
+      if (result === ""){
+        console.log("No such user address");
+        res.render('user/address', { title: 'address' , status: 0, num: result.length});
+      }else{
+        console.log("Found!");
+        res.render('user/address', { title: 'address' , status: 1, data: result, num: result.length});
+      }
+    });
+    db.close();
+  });
 
 });
 

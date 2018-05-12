@@ -1,8 +1,8 @@
 let express = require('express');
 let router = express.Router();
 
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017";
+let MongoClient = require('mongodb').MongoClient;
+let url = "mongodb://localhost:27017";
 const {ObjectId} = require('mongodb');
 
 
@@ -20,17 +20,17 @@ router.get('/profile', function(req, res, next) {
         if (err) throw err;
         console.log("Success connect");
 
-        var dbo = db.db("web");
-        var where = {UserID: req.query.id};
+        let dbo = db.db("web");
+        let where = {UserID: req.query.id};
         dbo.collection("userAccount").find(where).toArray(function(err, result) {
             if (err) throw err;
-            if (result == ""){
+            if (result === ""){
                 console.log("No such user");
                 res.render('user/profile', { title: 'profile' , status: 0, id: req.query.id});
             }else{
                 console.log("Found!");
-                var pri = result[0].PrivacyBits;
-                var Adr = "";
+                let pri = result[0].PrivacyBits;
+                let Adr = "";
                 if (pri[0] === '0') {delete result[0].FirstName; delete result[0].LastName;}
                 if (pri[1] === '0') delete result[0].Gender;
                 if (pri[2] === '0') delete result[0].Birth;
@@ -60,11 +60,11 @@ router.get('/address', function(req, res, next) {
         if (err) throw err;
         console.log("Success connect");
 
-        var dbo = db.db("web");
-        var where = {UserID: req.session.userID};
+        let dbo = db.db("web");
+        let where = {UserID: req.session.userID};
         dbo.collection("userAddress").find(where).toArray(function(err, result) {
             if (err) throw err;
-            if (result == ""){
+            if (result === ""){
                 console.log("No such user adderss");
                 res.render('user/address', { title: 'address' , status: 0, num: result.length});
             }else{
@@ -90,7 +90,7 @@ router.post('/submitAddress', function(req, res) {
             if (err) throw err;
             console.log("Success connect");
 
-            var dbo = db.db("web");
+            let dbo = db.db("web");
 
             dbo.collection("userAddress").insertOne(req.body,function(err, result) {
                 if (err) throw err;
@@ -106,9 +106,9 @@ router.post('/submitAddress', function(req, res) {
 router.post('/deleteAddress', function(req, res){
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("web");
+        let dbo = db.db("web");
 
-        var myquery = {
+        let myquery = {
             UserID: req.session.userID,
             _id: ObjectId(req.body.ID)
         };
@@ -127,12 +127,12 @@ router.get('/setting', function(req, res, next) {
         if (err) throw err;
         console.log("Success connect");
 
-        var dbo = db.db("web");
-        var where = {UserID: req.query.id};
+        let dbo = db.db("web");
+        let where = {UserID: req.query.id};
         dbo.collection("userAccount").find(where).toArray(function(err, result) {
             if (err) throw err;
             console.log("Found!");
-            var pri = result[0].PrivacyBits;
+            let pri = result[0].PrivacyBits;
             delete result[0].password;
             if (pri[3] === '0') {
                 console.log("no Address ");
@@ -154,7 +154,7 @@ router.post('/submitBook', function(req, res) {
 
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("web");
+        let dbo = db.db("web");
 
         console.log(req.body);
         dbo.collection("book").insertOne(req.body,function(err, result) {
@@ -169,9 +169,9 @@ router.post('/submitBook', function(req, res) {
 router.post('/deleteBook', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("web");
+        let dbo = db.db("web");
 
-        var myquery = {
+        let myquery = {
             sellerID: req.session.userID,
             _id: ObjectId(req.body.ID)
         };
@@ -189,8 +189,8 @@ router.get('/mybook', function(req, res, next) {
         if (err) throw err;
         console.log("Success connect");
 
-        var dbo = db.db("web");
-        var where = {sellerID: req.session.userID};
+        let dbo = db.db("web");
+        let where = {sellerID: req.session.userID};
         if (req.query.status){
             where.bookStatus = req.query.status;
         }
@@ -203,7 +203,7 @@ router.get('/mybook', function(req, res, next) {
         db.close();
     });
 });
-var ISBresult;
+let ISBresult;
 function ISBNtoTitle(data, index, res){
     if (index === data.length){
         console.log(data);
@@ -213,8 +213,8 @@ function ISBNtoTitle(data, index, res){
     }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
-        var dbo = db.db("web");
-        var where = {ISBN: data[index].ISBN};
+        let dbo = db.db("web");
+        let where = {ISBN: data[index].ISBN};
 
         dbo.collection("book").find(where).toArray(function(err, result) {
             if (err) throw err;
@@ -229,9 +229,9 @@ function ISBNtoTitle(data, index, res){
 router.post('/deleteFavorite', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("web");
+        let dbo = db.db("web");
 
-        var myquery = {
+        let myquery = {
             userID: req.session.userID,
             _id: ObjectId(req.body.ID)
         };
@@ -249,8 +249,8 @@ router.get('/favorite', function(req, res, next) {
         if (err) throw err;
         console.log("Success connect");
 
-        var dbo = db.db("web");
-        var where = {userID: req.session.userID};
+        let dbo = db.db("web");
+        let where = {userID: req.session.userID};
 
         console.log(where);
         dbo.collection("favorite").find(where).toArray(function(err, result) {
