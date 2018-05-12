@@ -2,4 +2,9 @@ extends ../layout
 
 block content
   .container
-    
+    form(method="post", action="/transaction/new")
+      each item in result
+        .custom-control.custom-radio
+          input.custom-control-input(type='radio', id=item.id, name='address', value=item.id required)
+          label.custom-control-label(for=item.id)= item.adrString
+      button.btn.btn-primary Submit Request

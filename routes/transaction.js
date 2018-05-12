@@ -20,14 +20,22 @@ const {ObjectId} = require('mongodb');
 
 /* GET home page. */
 
-
-
 router.get('/list/buy', function(req, res, next) {
+  req.session.userID = '5af52b61b238639f70ee4311';
+  if (!req.query.type) req.query.type = "active";
   MongoClient.connect(url, function (err, mongo) {
     if (err) throw err;
     let db = mongo.db("web");
     db.collection("transactions").aggregate([
-      {$match: {buyerID: /*req.session.userID*/ObjectId("5af5d79cabaade2100a9cfea")}},
+      {$match: {
+        buyerID: ObjectId(req.session.userID),
+        transactionStatus: req.query.type === "active" ?
+          {$in: ["Created", "Accepted", "Sent"]} : (
+            req.query.type === "inactive" ?
+              {$in: ["Rejected", "Finished", "Complete"]} :
+              {$in: ["Created", "Accepted", "Sent", "Rejected", "Finished", "Complete"]}
+          )
+      }},
       {$lookup: {
         from: "book",
         localField: "recordID",
@@ -45,24 +53,25 @@ router.get('/list/buy', function(req, res, next) {
           // console.log(item.bookRecord);
           transactionList.push({
             transactionID: item._id,
-            recordID: item.bookRecord[0].bookTitle,
-            anotherUserID: item.sellerInfo[0].FirstName + " " + item.sellerInfo[0].LastName,
+            bookTitle: item.bookRecord[0].bookTitle,
+            userName: item.sellerInfo[0].FirstName + " " + item.sellerInfo[0].LastName,
             transactionStatus: item.transactionStatus,
             readStatus: item.buyerIsRead
           })
         });
         // console.log(transactionList);
-        res.render('transaction/list', {transactionList: transactionList});
+        res.render('transaction/list', {transactionList: transactionList, isBuyer: true, type: req.query.type});
     });
   });
 });
 
 router.get('/list/sell', function(req, res, next) {
+  req.session.userID = '5af52b61b238639f70ee4311';
   MongoClient.connect(url, function (err, mongo) {
     if (err) throw err;
     let db = mongo.db("web");
     db.collection("transactions").aggregate([
-      {$match: {sellerID: /*req.session.userID*/ObjectId("5af5d79cabaade2100a9cfea")}},
+      {$match: {sellerID: ObjectId(req.session.userID)}},
       {$lookup: {
           from: "book",
           localField: "recordID",
@@ -80,14 +89,14 @@ router.get('/list/sell', function(req, res, next) {
         // console.log(item.bookRecord);
         transactionList.push({
           transactionID: item._id,
-          recordID: item.bookRecord[0].bookTitle,
-          anotherUserID: item.buyerInfo[0].FirstName + " " + item.buyerInfo[0].LastName,
+          bookTitle: item.bookRecord[0].bookTitle,
+          userName: item.buyerInfo[0].FirstName + " " + item.buyerInfo[0].LastName,
           transactionStatus: item.transactionStatus,
           readStatus: item.sellerIsRead
         })
       });
       // console.log(transactionList);
-      res.render('transaction/list', {transactionList: transactionList});
+      res.render('transaction/list', {transactionList: transactionList, isBuyer: false});
     });
   });
 
@@ -96,12 +105,7 @@ router.get('/list/sell', function(req, res, next) {
 router.get('/new/:recordID', function (req, res, next) {
   req.session.userID = '5af52b61b238639f70ee4311';
 
-  /*if (req.session.sign){
-      console.log("ok");
-  }else {
-      console.log("no");
-      req.session.sign = 1;
-  }*/
+
   MongoClient.connect(url, function(err, db){
     if (err) throw err;
     console.log("Success connect");
@@ -110,12 +114,23 @@ router.get('/new/:recordID', function (req, res, next) {
     let where = {UserID: req.session.userID};
     dbo.collection("userAddress").find(where).toArray(function(err, result) {
       if (err) throw err;
-      if (result === ""){
+      if (result === []){
         console.log("No such user address");
-        res.render('user/address', { title: 'address' , status: 0, num: result.length});
-      }else{
+        res.render('transaction/new', {});
+      } else {
         console.log("Found!");
-        res.render('user/address', { title: 'address' , status: 1, data: result, num: result.length});
+        let addressList = [], tempStr = "";
+        result.forEach(function (address) {
+          tempStr = "";
+          if (address.StreetNum) tempStr += (address.StreetNum + ", ");
+          if (address.StreetAddress) tempStr += (address.StreetAddress + ", ");
+          if (address.City) tempStr += (address.City + ", ");
+          if (address.State) tempStr += (address.State + ", ");
+          if (address.Country) tempStr += (address.Country);
+          if (address.ZipCode) tempStr += (" (Zip: " + address.ZipCode + ")");
+          addressList.push({id: address._id, adrString: tempStr});
+        });
+        res.render('transaction/new', {result: addressList});
       }
     });
     db.close();
@@ -124,24 +139,52 @@ router.get('/new/:recordID', function (req, res, next) {
 });
 
 router.post('/new', function (req, res, next) {
-
+  req.session.userID = '5af52b61b238639f70ee4311';
+  let recordID = req.get("Referer").split("/").pop();
+  console.log(recordID);
+  MongoClient.connect(url, function(err, mongo) {
+    if (err) throw err;
+    console.log("Success connect");
+    let db = mongo.db("web");
+    let where = {_id: ObjectId(recordID)};
+    db.collection("book").findOne(where, function (err, recordInfo) {
+      console.log(recordInfo);
+      transactionDB.create({
+        recordID: recordID,
+        buyerID: req.session.userID,
+        sellerID: recordInfo.sellerID,
+        addressID: req.body.address,
+      }, function (err, transaction) {
+        if (err) throw err;
+        res.redirect("/transaction/list/buy");
+      })
+    });
+    db.collection("book").updateOne({_id: ObjectId(recordID)}, {$set: {bookStatus: "Transaction"}}, function(err, result) {
+      if (err) throw err;
+    });
+  });
 });
 
 router.get('/detail/:transactionID', function (req, res, next) {
+  req.session.userID = '5af52b61b238639f70ee4311';
   transactionDB.findOne({
-    _id: req.params.transactionID/*,
+    _id: req.params.transactionID,
     $or: [
       { sellerID: req.session.userID },
       { buyerID: req.session.userID }
-    ]*/}).exec(function (err, transaction) {
+    ]}).exec(function (err, transaction) {
     if (!transaction) {
       err = new Error();
       err.status = 404;
       res.render("error", {message: "Transaction Not Found", error: err});
       return;
     }
-    transaction.readStatus = true;
-    let isBuyer = transaction.buyerID.toString() === "5af5d79cabaade2100a9cfea";
+    let isBuyer = transaction.buyerID.toString() === req.session.userID;
+    if (isBuyer) {
+      transaction.buyerIsRead = true
+    } else {
+      transaction.sellerIsRead = true
+    }
     console.log("isBuyer:", isBuyer);
     let transactionInfo = {};
     // console.log(transaction);
@@ -214,8 +257,8 @@ router.post('/detail/:transactionID', function (req, res, next) {
       transaction.toSent();
     } else if (req.body.action === "Complete") {
       transaction.toComplete();
-    } else {
-
+    } else if (req.body.action === "Cancel") {
+      transaction.toCancelled();
     }
     res.redirect("/transaction/detail/" + req.params.transactionID);
   });

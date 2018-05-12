@@ -1,22 +1,38 @@
 extends ../layout
 
 block header
-  title Transactions
+  title= isBuyer ? "Incoming" : "Outgoing" + " Transactions"
+  script.
+    $(document).ready(function () {
+      $(".clickable-row").click(function () {
+        window.location = $(this).data("href");
+      });
+    });
 
 block content
   .container
-    h1.mb-4 Transactions
-    .list-group
-      .list-group-item
-        .row
-          .col-sm-3 Transaction ID
-          .col-sm-6 Book Name
-          .col-sm-2 Name of Another
-          .col-sm-1 Status
-      each item in transactionList
-        a.list-group-item.list-group-item-action(href='/transaction/detail/'+item.transactionID)
-          .row
-            .col-sm-3= item.transactionID
-            .col-sm-6= item.recordID
-            .col-sm-2= item.anotherUserID
-            .col-sm-1= item.transactionStatus
+    h1.mb-4= (isBuyer ? "Incoming" : "Outgoing") + " Transactions"
+    ul.nav.nav-pills.mb-4
+      li.nav-item
+        a.nav-link(class= type === "active" ? "active" : "", href=(isBuyer ? "buy" : "sell") + '?type=active') Active
+      li.nav-item
+        a.nav-link(class= type === "inactive" ? "active" : "", href=(isBuyer ? "buy" : "sell") + '?type=inactive') Inactive
+      li.nav-item
+        a.nav-link(class= type === "all" ? "active" : "", href=(isBuyer ? "buy" : "sell") + '?type=all') All
+    .table-responsive
+      table.table.table-hover
+        thead
+          tr
+            th(scope='col') Transaction ID
+            th(scope='col') Book Name
+            th(scope='col')= (isBuyer ? "Seller" : "Buyer")
+            th(scope='col') Status
+        tbody
+          each item in transactionList
+            tr.clickable-row(data-href='/transaction/detail/' + item.transactionID)
+              th(scope='row')= item.transactionID
+              td= item.bookTitle
+              td= item.userName
+              td #{item.transactionStatus}
+                if !item.readStatus
+                  span.badge.badge-primary.ml-2 NEW
