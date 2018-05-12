@@ -1,0 +1,10 @@
+extends ../layout.pug
+
+block content
+
+    h1 jumping...
+
+    script.
+        $(document).ready(function ($) {
+            window.location.href="http://172.104.175.75:3000/book/record?isbn=9780802084248";
+        })

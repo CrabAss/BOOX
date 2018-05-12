@@ -4,23 +4,40 @@ let MongoDB = require('mongodb').Db;
 let Server = require('mongodb').Server;
 let bcrypt = require('bcrypt');
 
+let MongoClient= require("mongodb").MongoClient;
+let url = "mongodb://localhost:27017";
+const {ObjectId} = require('mongodb');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+    if (!req.session.flag){
+      req.session.flag = 0;
+    }
+    MongoClient.connect(url, function(err, db) {
+        let dbo=db.db("web");
+        dbo.collection("book").find().sort({date: -1}).limit(10).toArray(function (err, rank) {
+            res.render('book/index', {title: "Index", list: rank, flag : req.session.flag});
+        });
+    });
 });
 
 router.get('/index', function(req, res, next) {
-  let where = {};
-  book.find(where).toArray(function(err, result) {
-    if (err) throw err;
-    // console.log(result);
-    res.render('index', { title: 'Express', books: result});
-  });
+    MongoClient.connect(url, function(err, db) {
+        let dbo=db.db("web");
+        dbo.collection("book").find().sort({date: -1}).limit(10).toArray(function (err, rank) {
+            res.render('book/index', {title: "Index", list: rank, flag : req.session.flag});
+        });
+    });
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Express' });
+  res.render('login', { title: 'Login' , flag : req.session.flag});
 });
+router.get('/logout', function(req, res, next) {
+    req.session.flag = 0;
+    res.render('logout', { title: 'Logout' , flag : req.session.flag});
+});
+
 
 let dbName = 'web';
 let dbHost = 'localhost';
@@ -65,6 +82,8 @@ router.post('/login', function(req, res){
       res.status(400).send(e);
     }	else{
       req.session.user = o;
+      req.session.userID = o._id;
+      req.session.flag = 1;
       if (req.body['remember-me'] === 'true'){
         res.cookie('user', o.user, { maxAge: 900000 });
         res.cookie('pass', o.pass, { maxAge: 900000 });
@@ -75,7 +94,8 @@ router.post('/login', function(req, res){
 });
 
 router.get('/signup', function(req, res, next) {
-  res.render('signup');
+
+  res.render('signup', {flag : req.session.flag});
 });
 
 addNewAccount = function(newData, callback) {

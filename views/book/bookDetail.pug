@@ -1,0 +1,116 @@
+extends ../layout
+
+block header
+
+block content
+    #bookinfo
+        img#cover
+        table
+            tr
+                td title:
+                td#title
+            tr
+                td authors:
+                td#authors
+            tr
+                td description:
+                td#description
+            tr
+                td categories:
+                td#categories
+            tr
+                td publisher:
+                td#publisher
+            tr
+                td publish date:
+                td#publishedDate
+            tr
+                if !favorite
+                    button#addFav add favorite
+                else
+                    button#delFav delete favorite
+
+    hr
+
+    #tags
+        table
+            tr
+                td tags:
+                td
+                    each tag in tagList
+                        span(id=tag.tagName)
+                            | #{tag.tagName}
+                            if tag.delUrl
+                                | [
+                                a(href=tag.delUrl) X
+                                | ]
+                            | ,
+                    | insert:
+                    form(action="http://172.104.175.75:3000/book/detail" method="GET")
+                        input(type="hidden" value=isbn name="isbn")
+                        input(type="text" required="required" name="addTag")
+                        input(type="submit" value="submit")
+
+
+    hr
+
+    #sellerInfo
+        table
+            tr
+                td Seller
+                td Book Condition
+                td Price
+                td Payment Available
+                td Remark
+            each ele in list
+                tr
+                    td: a(href="../user/profile?ID="+ele.sellerID) seller info
+                    td= ele.bookCondition
+                    td= ele.price
+                    td= ele.payment
+                    td= ele.remark
+                    td: a(href="../transaction/new/"+ele._id) send request
+
+
+    script.
+        $(document).ready(function () {
+
+            var ssr = "!{username}";
+            console.log(ssr);
+            var data = getapi();
+            var book = data.items[0].volumeInfo;
+            $("#cover").attr("src", book.imageLinks.thumbnail);
+            $("#title").text(book.title + " " + book.subtitle);
+            $("#authors").text(book.authors.join(", "));
+            $("#description").text(book.description);
+            $("#categories").text(book.categories.join(", "));
+            $("#publisher").text(book.publisher);
+            $("#publishedDate").text(book.publishedDate);
+
+            var list = !{JSON.stringify(list)};
+            var tags = !{JSON.stringify(tagList)};
+
+            console.log("new");
+            console.log(tags);
+
+            var url = "http://172.104.175.75:3000/book/detail?isbn=!{isbn}";
+            $("#addFav").click(function () {
+                url = url + "&addFav=1";
+                window.location.href = url;
+            });
+            $("#delFav").click(function () {
+                url = url + "&delFav=1";
+                window.location.href = url;
+            });
+        });
+
+        function getapi() {
+            var isbn = "!{isbn}";
+            var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+            var data = $.ajax({
+                url: url,
+                async: false
+            }).responseJSON;
+            return data;
+        }
+

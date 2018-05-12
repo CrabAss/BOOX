@@ -1,0 +1,27 @@
+extends layout
+
+block header
+    title Sign In Reminder
+
+block content
+    h5(style="margin-top: 10px;")
+        | Please Sign In First!
+    a(href="/login")
+        | Back to Sign In Page in&nbsp;
+        strong#Time 3
+        | &nbsp;seconds...
+
+    script.
+        function changeTime() {
+            var Time = $('#Time').text();
+            Time = parseInt(Time);
+            Time--;
+            if (Time <= 0) window.location.href = "/login";
+            else {
+                $('#Time').text(Time);
+                setTimeout(changeTime, 1000);
+            }
+        }
+        $(document).ready(function () {
+            setTimeout(changeTime, 1000);
+        });

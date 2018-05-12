@@ -1,0 +1,8 @@
+extends layout.pug
+
+block content
+    script.
+        $(document).ready(function ($) {
+            alert("Please login first");
+            window.location.href = "http://172.104.175.75:3000/index";
+        })

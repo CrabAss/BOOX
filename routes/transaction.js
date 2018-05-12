@@ -21,7 +21,11 @@ const {ObjectId} = require('mongodb');
 /* GET home page. */
 
 router.get('/list/buy', function(req, res, next) {
-  req.session.userID = '5af52b61b238639f70ee4311';
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+
   if (!req.query.type) req.query.type = "active";
   MongoClient.connect(url, function (err, mongo) {
     if (err) throw err;
@@ -60,13 +64,17 @@ router.get('/list/buy', function(req, res, next) {
           })
         });
         // console.log(transactionList);
-        res.render('transaction/list', {transactionList: transactionList, isBuyer: true, type: req.query.type});
+        res.render('transaction/list', {transactionList: transactionList, isBuyer: true, type: req.query.type, flag : req.session.flag});
     });
   });
 });
 
 router.get('/list/sell', function(req, res, next) {
-  req.session.userID = '5af52b61b238639f70ee4311';
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+
   if (!req.query.type) req.query.type = "active";
   MongoClient.connect(url, function (err, mongo) {
     if (err) throw err;
@@ -105,14 +113,17 @@ router.get('/list/sell', function(req, res, next) {
         })
       });
       // console.log(transactionList);
-      res.render('transaction/list', {transactionList: transactionList, isBuyer: false, type: req.query.type});
+      res.render('transaction/list', {transactionList: transactionList, isBuyer: false, type: req.query.type, flag : req.session.flag});
     });
   });
 
 });
 
 router.get('/new/:recordID', function (req, res, next) {
-  req.session.userID = '5af52b61b238639f70ee4311';
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
 
 
   MongoClient.connect(url, function(err, db){
@@ -125,7 +136,7 @@ router.get('/new/:recordID', function (req, res, next) {
       if (err) throw err;
       if (result === []){
         // console.log("No such user address");
-        res.render('transaction/new', {});
+        res.render('transaction/new', {flag : req.session.flag});
       } else {
         // console.log("Found!");
         let addressList = [], tempStr = "";
@@ -139,7 +150,7 @@ router.get('/new/:recordID', function (req, res, next) {
           if (address.ZipCode) tempStr += (" (Zip: " + address.ZipCode + ")");
           addressList.push({id: address._id, adrString: tempStr});
         });
-        res.render('transaction/new', {result: addressList});
+        res.render('transaction/new', {result: addressList, flag : req.session.flag});
       }
     });
     db.close();
@@ -148,7 +159,11 @@ router.get('/new/:recordID', function (req, res, next) {
 });
 
 router.post('/new', function (req, res, next) {
-  req.session.userID = '5af52b61b238639f70ee4311';
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+
   let recordID = req.get("Referer").split("/").pop();
   // console.log(recordID);
   MongoClient.connect(url, function(err, mongo) {
@@ -175,7 +190,11 @@ router.post('/new', function (req, res, next) {
 });
 
 router.get('/detail/:transactionID', function (req, res, next) {
-  req.session.userID = '5af52b61b238639f70ee4311';
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+
   transactionDB.findOne({
     _id: req.params.transactionID,
     $or: [
@@ -185,7 +204,7 @@ router.get('/detail/:transactionID', function (req, res, next) {
     if (!transaction) {
       err = new Error();
       err.status = 404;
-      res.render("error", {message: "Transaction Not Found", error: err});
+      res.render("error", {message: "Transaction Not Found", error: err, flag : req.session.flag});
       return;
     }
     let isBuyer = transaction.buyerID.toString() === req.session.userID;
@@ -235,6 +254,7 @@ router.get('/detail/:transactionID', function (req, res, next) {
             }
             transactionInfo.buyer.address += ' (Zip code: ' + address.ZipCode + ')';
             transactionInfo.status = transaction.transactionStatus;
+            transactionInfo.flag = req.session.flag;
             // console.log(transactionInfo);
             res.render("transaction/detail", transactionInfo);
           });
@@ -246,6 +266,10 @@ router.get('/detail/:transactionID', function (req, res, next) {
 });
 
 router.post('/detail/:transactionID', function (req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
   transactionDB.findOne({
     _id: req.params.transactionID/*,
     $or: [
@@ -255,7 +279,7 @@ router.post('/detail/:transactionID', function (req, res, next) {
     if (!transaction) {
       err = new Error();
       err.status = 404;
-      res.render("error", {message: "Transaction Not Found", error: err});
+      res.render("error", {message: "Transaction Not Found", error: err, flag : req.session.flag});
       return;
     }
     if (req.body.action === "Accept") {

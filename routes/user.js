@@ -16,6 +16,10 @@ router.use(bodyParser.json());
 
 /* GET home page. */
 router.get('/profile', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -27,7 +31,7 @@ router.get('/profile', function(req, res, next) {
             if (err) throw err;
             if (result == ""){
                 // console.log("No such user");
-                res.render('user/profile', { title: 'profile' , status: 0, id: req.query.id});
+                res.render('user/profile', { title: 'profile' , status: 0, id: req.query.id, flag : req.session.flag});
             }else{
                 // console.log("Found!");
                 let pri = result[0].PrivacyBits;
@@ -37,7 +41,7 @@ router.get('/profile', function(req, res, next) {
                 if (pri[2] === '0') delete result[0].Birth;
                 if (pri[3] === '0') {
                     // console.log("no Address ");
-                    res.render('user/profile', { title: 'profile' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr});
+                    res.render('user/profile', { title: 'profile' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr, flag : req.session.flag});
                 }else{
                     where = { UserID: req.query.ID };
                     // console.log(data);
@@ -46,7 +50,7 @@ router.get('/profile', function(req, res, next) {
                         // console.log("ok");
                         if (result[(parseInt(pri[3]) - 1)])
                             Adr = result[(parseInt(pri[3]) - 1)];
-                        res.render('user/profile', { title: 'setting' , id: result[0]._id.toString(), status: 1, data: data, adr: Adr});
+                        res.render('user/profile', { title: 'setting' , id: result[0]._id.toString(), status: 1, data: data, adr: Adr, flag : req.session.flag});
                         db.close();
                     });
                 }
@@ -58,14 +62,12 @@ router.get('/profile', function(req, res, next) {
 });
 
 router.get('/address', function(req, res, next) {
-    req.session.userID = '5af52b61b238639f70ee4311';
 
-    /*if (req.session.sign){
-        console.log("ok");
-    }else {
-        console.log("no");
-        req.session.sign = 1;
-    }*/
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -76,10 +78,10 @@ router.get('/address', function(req, res, next) {
             if (err) throw err;
             if (result == ""){
                 // console.log("No such user adderss");
-                res.render('user/address', { title: 'address' , status: 0, num: result.length});
+                res.render('user/address', { title: 'address' , status: 0, num: result.length, data: result, flag : req.session.flag});
             }else{
                 // console.log("Found!");
-                res.render('user/address', { title: 'address' , status: 1, data: result, num: result.length});
+                res.render('user/address', { title: 'address' , status: 1, data: result, num: result.length, flag : req.session.flag});
             }
         });
         db.close();
@@ -88,7 +90,10 @@ router.get('/address', function(req, res, next) {
 });
 
 router.post('/submitAddress', function(req, res) {
-    req.session.userID = '5af52b61b238639f70ee4311';
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
 
     if (req.body.adrNum === '0'){
         req.body.UserID = req.session.userID;
@@ -114,6 +119,11 @@ router.post('/submitAddress', function(req, res) {
     }
 });
 router.post('/deleteAddress', function(req, res){
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         let dbo = db.db("web");
@@ -132,7 +142,10 @@ router.post('/deleteAddress', function(req, res){
     });
 });
 router.post('/modifyProfile', function(req, res) {
-
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         let dbo = db.db("web");
@@ -153,6 +166,10 @@ router.post('/modifyProfile', function(req, res) {
     });
 });
 router.get('/modifyprofile', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -170,7 +187,7 @@ router.get('/modifyprofile', function(req, res, next) {
             dbo.collection("userAddress").find(where).toArray(function(err, result) {
                 if (err) throw err;
                 // console.log("ok");
-                res.render('user/modifyprofile', { title: 'modifyprofile' , data: data, adr: result});
+                res.render('user/modifyprofile', { title: 'modifyprofile' , data: data, adr: result, flag : req.session.flag});
                 db.close();
             });
         });
@@ -179,6 +196,10 @@ router.get('/modifyprofile', function(req, res, next) {
     });
 });
 router.get('/setting', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -193,7 +214,7 @@ router.get('/setting', function(req, res, next) {
             delete result[0].password;
             if (pri[3] === '0') {
                 // console.log("no Address ");
-                res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr});
+                res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr, flag : req.session.flag});
             }else{
                 where = { UserID: req.session.userID };
                 // console.log(where);
@@ -202,7 +223,7 @@ router.get('/setting', function(req, res, next) {
                     // console.log("ok");
                     if (result[(parseInt(pri[3]) - 1)])
                          Adr = result[(parseInt(pri[3]) - 1)];
-                    res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: data, adr: Adr});
+                    res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: data, adr: Adr, flag : req.session.flag});
                     db.close();
                 });
             }
@@ -213,9 +234,17 @@ router.get('/setting', function(req, res, next) {
 });
 
 router.get('/addbook', function(req, res, next) {
-    res.render('user/addbook', { title: 'addbook' });
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
+    res.render('user/addbook', { title: 'addbook' , flag : req.session.flag});
 });
 router.get('/modifybook', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -225,7 +254,7 @@ router.get('/modifybook', function(req, res, next) {
         dbo.collection("book").find(where).toArray(function(err, result) {
             if (err) throw err;
             // console.log("Found!");
-            res.render('user/modifybook', { title: 'modifybook' , data: result[0]});
+            res.render('user/modifybook', { title: 'modifybook' , data: result[0], flag : req.session.flag});
             db.close();
         });
         // console.log("Finish");
@@ -233,6 +262,10 @@ router.get('/modifybook', function(req, res, next) {
     });
 });
 router.post('/submitBook', function(req, res) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     req.body.sellerID = req.session.userID;
     req.body.date = (new Date()).toISOString().split('T')[0];
     req.body.bookStatus = "Available";
@@ -251,6 +284,10 @@ router.post('/submitBook', function(req, res) {
     });
 });
 router.post('/modifyBook', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         let dbo = db.db("web");
@@ -270,6 +307,10 @@ router.post('/modifyBook', function(req, res, next) {
 
 
 router.post('/deleteBook', function(req, res) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         let dbo = db.db("web");
@@ -288,6 +329,10 @@ router.post('/deleteBook', function(req, res) {
     });
 });
 router.get('/mybook', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -301,17 +346,18 @@ router.get('/mybook', function(req, res, next) {
         dbo.collection("book").find(where).toArray(function(err, result) {
             if (err) throw err;
             // console.log("Found!");
-            res.render('user/mybook', { title: 'mybook', data: result, num: result.length});
+            res.render('user/mybook', { title: 'mybook', data: result, num: result.length, flag : req.session.flag});
         });
         db.close();
     });
 });
 let ISBresult;
-function ISBNtoTitle(data, index, res){
+function ISBNtoTitle(data, index, res, req){
+
     if (index === data.length){
         // console.log(data);
 
-        res.render('user/favorite', { title: 'favorite', data: data, num: data.length});
+        res.render('user/favorite', { title: 'favorite', data: data, num: data.length, flag : req.session.flag});
         return;
     }
     MongoClient.connect(url, function(err, db){
@@ -322,7 +368,7 @@ function ISBNtoTitle(data, index, res){
         dbo.collection("book").find(where).toArray(function(err, result) {
             if (err) throw err;
             data[index].bookTitle = result[0].bookTitle;
-            ISBNtoTitle(data, (parseInt(index) + 1), res);
+            ISBNtoTitle(data, (parseInt(index) + 1), res, req);
         });
         db.close();
     });
@@ -330,6 +376,10 @@ function ISBNtoTitle(data, index, res){
 
 
 router.post('/deleteFavorite', function(req, res) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         let dbo = db.db("web");
@@ -348,6 +398,10 @@ router.post('/deleteFavorite', function(req, res) {
     });
 });
 router.get('/favorite', function(req, res, next) {
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+        return;
+    }
     MongoClient.connect(url, function(err, db){
         if (err) throw err;
         // console.log("Success connect");
@@ -358,7 +412,7 @@ router.get('/favorite', function(req, res, next) {
         // console.log(where);
         dbo.collection("favorite").find(where).toArray(function(err, result) {
             if (err) throw err;
-            ISBNtoTitle(result, 0, res);
+            ISBNtoTitle(result, 0, res, req);
         });
         db.close();
     });

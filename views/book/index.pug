@@ -1,0 +1,31 @@
+extends ../layout.pug
+
+block content
+    table
+        tr
+            td cover
+            td title
+            td price
+        each ele in list
+            tr
+                td: image(id=ele.ISBN+"cover")
+                td: a(id=ele.ISBN+"title")
+                td(id=ele.ISBN+"price")
+
+    script.
+        list = !{JSON.stringify(list)};
+
+        for (i = 0; i < list.length; i++) {
+            var book = getapi(list[i].ISBN);
+            $("#"+list[i].ISBN+"cover").attr("src", book.imageLinks.thumbnail);
+            $("#"+list[i].ISBN+"title").text(book.title).attr("href", "/book/detail?isbn="+list[i].ISBN);
+            $("#"+list[i].ISBN+"price").text(list[i].price);
+        }
+
+        function getapi(isbn) {
+            var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+            return $.ajax({
+                url: url,
+                async: false
+            }).responseJSON.items[0].volumeInfo;
+        }

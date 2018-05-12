@@ -10,13 +10,14 @@ router.get('/detail', function(req, res, next) {
     /*if (!req.session.userID) {
         res.render("jump", {title: 'jump'});
     } else let userID = req.session.userID; */
-    let userID = "5af52b61b238639f70ee4311";
+    var userID = req.session.userID;
 
     let data = req.query;
     let isbn = data.isbn;
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         let dbo = db.db("web");
+        var name;
         name = req.query.addTag;
 
         if (req.query.addTag) {
@@ -33,8 +34,10 @@ router.get('/detail', function(req, res, next) {
 
         if (req.query.addFav) {
             dbo.collection("favorite").find({userID: userID, ISBN: isbn}).toArray(function (err, res) {
+                console.log("HERE");
                 if (res.length > 0) return ;
                 dbo.collection("favorite").insertOne({userID: userID, ISBN: isbn, date: (new Date()).toISOString().split('T')[0]});
+                console.log("SBCMR");
             })
         }
 
@@ -45,10 +48,14 @@ router.get('/detail', function(req, res, next) {
         let where = {ISBN: isbn, bookStatus: "Available"};
         if (data.recordID)
             where._id = data.recordID;
+        console.log("FAV");
         dbo.collection("favorite").find({userID: userID, ISBN: isbn}).toArray(function (err, favList) {
             let favFlag = 0;
             if (favList.length > 0) favFlag = 1;
-            dbo.collection("userAccount").find({_id: ObjectId("5af5b0d55fb28b9192f5bbd5")}).toArray(function (err, userList) {
+            if (req.query.addFav) favFlag = 1;
+            if (req.query.delFav) favFlag = 0;
+            console.log({_id: ObjectId(userID)});
+            dbo.collection("userAccount").find({_id: ObjectId(userID)}).toArray(function (err, userList) {
                 let username = userList[0].Username;
                 dbo.collection("tags").find({ISBN: isbn}).toArray(function (err, tagList) {
                     for (i = 0; i < tagList.length; i++)
@@ -60,7 +67,7 @@ router.get('/detail', function(req, res, next) {
                             title: 'book details',
                             data : data,
                             list: bookList,
-                            favorite: favFlag,
+                            favorite: favFlag, flag : req.session.flag,
                             tagList: tagList});
                     });
                 });
@@ -70,20 +77,24 @@ router.get('/detail', function(req, res, next) {
 });
 
 router.get('/test', function (req, res, next) {
-    res.render('book/test');
+    res.render('book/test', {flag : req.session.flag});
 });
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 router.get("/", function (req, res, next) {
     MongoClient.connect(url, function(err, db) {
         let dbo=db.db("web");
         dbo.collection("book").find().sort({date: -1}).limit(10).toArray(function (err, rank) {
-            res.render('book/index', {list: rank});
+            res.render('book/index', {list: rank, flag : req.session.flag});
         });
     });
 });
 
 router.get("/search", function (req, res, next) {
-    let isbn = req.query.isbn;
+    let isbn = req.query.ISBN;
     let title = req.query.title;
     let tags = req.query.tags;
     let where = {};
@@ -108,7 +119,7 @@ router.get("/search", function (req, res, next) {
                 // console.log(rank);
                 rank = Array.from(new Set(rank));
                 // console.log(rank);
-                res.render("book/search", {list: rank, query: req.query});
+                res.render("book/search", {list: rank, query: req.query, flag : req.session.flag});
             })
             //res.render("book/search", {list: {}});
         });
@@ -116,10 +127,11 @@ router.get("/search", function (req, res, next) {
 })
 
 router.get("/record", function (req, res, next) {
-    /*if (!req.session.userID) {
-        res.render("jump", {title: 'jump'});
-    } else let userID = req.session.userID; */
-    let userID = "5af52b61b238639f70ee4311";
+    if (!req.session.flag) {
+        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+    } else {
+        var userID = req.session.userID;
+    }
 
     let data = req.query;
     let isbn = data.isbn;
@@ -127,18 +139,18 @@ router.get("/record", function (req, res, next) {
         if (err) throw err;
 
         let dbo = db.db("web");
-        dbo.collection("userAccount").find({_id: ObjectId("5af5b0d55fb28b9192f5bbd5")}).toArray(function (err, userList) {
+        dbo.collection("userAccount").find({_id: ObjectId(userID)}).toArray(function (err, userList) {
             let username = userList[0].Username;
             dbo.collection("tags").find({ISBN: isbn}).toArray(function (err, tagList) {
                 dbo.collection("book").find({ISBN: isbn, sellerID: userID}).toArray(function (err, bookList) {
                     if (bookList.length === 0)
-                        res.render("../jump.png");
+                        res.render("../jump.pug", {flag : req.session.flag});
                     res.render('book/record', {
                         isbn: isbn,
                         title: 'record details',
                         username: username,
                         list: bookList[0],
-                        tagList: tagList
+                        tagList: tagList, flag : req.session.flag
                     });
                 });
             });

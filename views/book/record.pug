@@ -1,0 +1,82 @@
+extends ../layout
+
+block header
+
+block content
+    #bookinfo
+        img#cover
+        table
+            tr
+                td title:
+                td#title
+            tr
+                td authors:
+                td#authors
+            tr
+                td description:
+                td#description
+            tr
+                td categories:
+                td#categories
+            tr
+                td publisher:
+                td#publisher
+            tr
+                td publish date:
+                td#publishedDate
+            tr
+                if !favorite
+                    button#addFav add favorite
+                else
+                    button#delFav delete favorite
+            tr
+                td tags:
+                td
+                    each tag in tagList
+                        span(id=tag.tagName)
+                            | #{tag.tagName}
+                            if tag.delUrl
+                                | [
+                                a(href=tag.delUrl) X
+                                | ]
+                            | ,
+            tr
+                td seller
+                td#username= username
+            tr
+                td book condition
+                td#bookCondition= list.bookCondition
+            tr
+                td payment available
+                td#payment= list.payment
+
+    script.
+        $(document).ready(function () {
+            var ssr = "!{username}";
+            console.log(ssr);
+            var data = getapi();
+            var book = data.items[0].volumeInfo;
+            $("#cover").attr("src", book.imageLinks.thumbnail);
+            $("#title").text(book.title + " " + book.subtitle);
+            $("#authors").text(book.authors.join(", "));
+            $("#description").text(book.description);
+            $("#categories").text(book.categories.join(", "));
+            $("#publisher").text(book.publisher);
+            $("#publishedDate").text(book.publishedDate);
+
+            var list = !{JSON.stringify(list)};
+            var tags = !{JSON.stringify(tagList)};
+
+            console.log("new");
+            console.log(tags);
+        });
+
+        function getapi() {
+            var isbn = "!{isbn}";
+            var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+            var data = $.ajax({
+                url: url,
+                async: false
+            }).responseJSON;
+            return data;
+        }
