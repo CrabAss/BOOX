@@ -4,52 +4,53 @@ block header
     title Setting
 
 block content
-    h1 Setting
-    table
-        tr
-            td Username
-            td
-                input#username.form-control-plaintext(type='text', readonly='', value='None')
+    div
+        h1 Setting
+        table
+            tr
+                td Username
+                td
+                    input#username.form-control-plaintext(type='text', readonly='', value='None')
 
-        tr
-            td First Name
-            td
-                input#firstname.form-control-plaintext(type='text', readonly='', value='None')
-            td
-                middle#disName *
-        tr
-            td Last Name
-            td
-                input#lastname.form-control-plaintext(type='text', readonly='', value='None')
-        tr
-            td Gender
-            td
-                input#gender.form-control-plaintext(type='text', readonly='', value='None')
-            td
-                middle#disGender *
-        tr
-            td Birth
-            td
-                input#birth.form-control-plaintext(type='text', readonly='', value='None')
-            td
-                middle#disBirth *
-        tr
-            td Phone
-            td
-                input#phone.form-control-plaintext(type='text', readonly='', value='None')
-        tr
-            td Email
-            td
-                input#email.form-control-plaintext(type='text', readonly='', value='None')
-        tr
-            td Display Address
-            td
-                input#address.form-control-plaintext(type='text', readonly='', value='None')
-        tr
-            td
-            td
-                button.btn.btn-primary(type='button', onclick="window.location.href = '/user/modifyprofile';")#btnModify
-                    | Modify
+            tr
+                td First Name
+                td
+                    input#firstname.form-control-plaintext(type='text', readonly='', value='None')
+                td
+                    middle#disName *
+            tr
+                td Last Name
+                td
+                    input#lastname.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td Gender
+                td
+                    input#gender.form-control-plaintext(type='text', readonly='', value='None')
+                td
+                    middle#disGender *
+            tr
+                td Birth
+                td
+                    input#birth.form-control-plaintext(type='text', readonly='', value='None')
+                td
+                    middle#disBirth *
+            tr
+                td Phone
+                td
+                    input#phone.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td Email
+                td
+                    input#email.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td Display Address
+                td
+                    input#address.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td
+                td
+                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/modifyprofile';")#btnModify
+                        | Modify
 
     script.
         var data = !{JSON.stringify(data)};

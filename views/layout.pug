@@ -1,4 +1,43 @@
 doctype html
+mixin SignInbar()
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        button.navbar-toggler(disabled = "disabled", type='button', data-toggle='collapse', data-target='#navbarTogglerDemo01', aria-controls='navbarTogglerDemo01', aria-expanded='false', aria-label='Toggle navigation')
+            | Please Enlarge Window
+        #navbarTogglerDemo01.collapse.navbar-collapse
+            a.navbar-brand(href='#') BOOX
+            ul.navbar-nav.mr-auto.mt-2.mt-lg-0
+                li.nav-item
+                    a.nav-link(href='/book/')
+                        i.ma.fa.fa-home
+                        | Home
+                li.nav-item
+                    a.nav-link(href='/Career')
+                        i.ma.fa.fa-trophy
+                        | Career
+                li.nav-item
+                    a.nav-link(href='/map')
+                        i.ma.fa.fa-map-marker
+                        | Map
+                li.nav-item.dropdown
+                    a#navbarDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+                        | Dropdown
+                    .dropdown-menu(aria-labelledby='navbarDropdown')
+                        a.dropdown-item(href='#') Action
+                        a.dropdown-item(href='#') Another action
+                        .dropdown-divider
+                        a.dropdown-item(href='#') Something else here
+
+
+            form.form-inline.my-2.my-lg-0
+                ul.navbar-nav.mr-auto.mt-2.mt-lg-0
+                    li.nav-item
+                        a.nav-link(href='/user/setting')
+                            i.ma.fa.fa-user
+                            | Account
+                    li.nav-item
+                        a.nav-link(href='/signout')
+                            i.ma.fa.fa-sign-out
+                            | Sign Out
 html
     head
         link(rel='stylesheet', href='/stylesheets/style.css')
@@ -10,15 +49,33 @@ html
             body {
                 background-image: url("/img/background.jpg");
                 background-size: cover;
+                padding: 1%;
             }
             .card{
+                margin-top: 20px;
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 border-radius: 25px;
             }
-
+            .container{
+                width: 80%;
+                padding: 0;
+                max-width: 100%;
+            }
+            .navbar {
+                border-radius: 10px;
+                width: 80%;
+                height: 10%;
+                text-align: center;
+                margin: 10px auto 0px auto;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            }
+            table{
+                width: 100%;
+            }
         block header
 
     body
+        +SignInbar()
         .container
             .card.p-5
                .row(style='margin-top:20px')
