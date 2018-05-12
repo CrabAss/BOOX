@@ -1,7 +1,92 @@
+extends ../layout
+
 block header
     title Setting
 
 block content
-    h1 Setting
+    div
+        h1 Setting
+        table
+            tr
+                td Username
+                td
+                    input#username.form-control-plaintext(type='text', readonly='', value='None')
+
+            tr
+                td First Name
+                td
+                    input#firstname.form-control-plaintext(type='text', readonly='', value='None')
+                td
+                    middle#disName *
+            tr
+                td Last Name
+                td
+                    input#lastname.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td Gender
+                td
+                    input#gender.form-control-plaintext(type='text', readonly='', value='None')
+                td
+                    middle#disGender *
+            tr
+                td Birth
+                td
+                    input#birth.form-control-plaintext(type='text', readonly='', value='None')
+                td
+                    middle#disBirth *
+            tr
+                td Phone
+                td
+                    input#phone.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td Email
+                td
+                    input#email.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td Display Address
+                td
+                    input#address.form-control-plaintext(type='text', readonly='', value='None')
+            tr
+                td
+                td
+                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/modifyprofile';")#btnModify
+                        | Modify
+
     script.
-        console.log();
+        var data = !{JSON.stringify(data)};
+        var adr = !{JSON.stringify(adr)};
+
+        $(document).ready(function () {
+            if (typeof data.Username !== "undefined") $('#username').val(data.Username)
+            if (typeof data.FirstName !== "undefined") $('#firstname').val(data.FirstName)
+            if (typeof data.LastName !== "undefined") $('#lastname').val(data.LastName)
+            if (typeof data.Gender !== "undefined") $('#gender').val(data.Gender)
+            if (typeof data.Birth !== "undefined") $('#birth').val(data.Birth)
+            if (typeof data.Phone !== "undefined") $('#phone').val(data.Phone)
+            if (typeof data.Email !== "undefined") $('#email').val(data.Email)
+
+            if (adr !== ''){
+                $('#address').val(displayAdr(adr))
+            }
+
+            if (data.PrivacyBits[0] === '1') {$('#disName').text('Public')}
+            else $('#disName').text('Private')
+            if (data.PrivacyBits[1] === '1') $('#disGender').text('Public')
+            else $('#disGender').text('Private')
+            if (data.PrivacyBits[2] === '1') $('#disBirth').text('Public')
+            else $('#disBirth').text('Private')
+        });
+        function displayAdr(adr){
+            var str = "", data = new Array();
+            data[0] = adr.StreetNum;
+            data[1] = adr.StreetAddress;
+            data[2] = adr.City;
+            data[3] = adr.State;
+            data[4] = adr.Country;
+            for (var i = 0; i <= 4; i++) {
+                if (str !== "") str += ", ";
+                str += data[i];
+            }
+            str += ' (zip-code: ' + adr.ZipCode + ')';
+            return str;
+        }

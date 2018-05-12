@@ -1,0 +1,146 @@
+extends ../layout
+
+block header
+    title ModifyProfile
+
+block content
+    h1 Modify Profile
+    // Modal
+    #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#delModalLabel.modal-title Modify Your Profile
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+                .modal-body
+                    middle Do you want to modify your profile?
+
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='button', onclick="modCheck()") Confirm
+    form
+        table
+            tr
+                td First Name
+                td
+                    input#firstname.form-control(type='text', value='None', name = "FirstName")
+                td
+                    select.form-control#disName(name='disName')
+                        option(value='Private' selected='0' === data.PrivacyBits[0]) Private
+                        option(value='Public' selected='0' !== data.PrivacyBits[0]) Public
+            tr
+                td Last Name
+                td
+                    input#lastname.form-control(type='text', value='None', name = "LastName")
+            tr
+                td Gender
+                td
+                    select.form-control#gender(name='Gender')
+                        option(value='Male' selected='Male' === data.Gender) Male
+                        option(value='Female' selected='Female' === data.Gender) Female
+                        option(value='Other' selected='Other' === data.Gender) Other
+                td
+                    select.form-control#disGender(name='disGender')
+                        option(value='Private' selected='0' === data.PrivacyBits[1]) Private
+                        option(value='Public' selected='0' !== data.PrivacyBits[1]) Public
+            tr
+                td Birth
+                td
+                    input#birth.form-control(type='date', value='None', , name = "Birth")
+                td
+                    select.form-control#disBirth(name='disBirth')
+                        option(value='Private' selected='0' === data.PrivacyBits[1]) Private
+                        option(value='Public' selected='0' !== data.PrivacyBits[1]) Public
+            tr
+                td Phone
+                td
+                    input#phone.form-control(type='text', value='None', name = "Phone", required="")
+            tr
+                td Email
+                td
+                    input#email.form-control(type='text', value='None', name = "Email", required="")
+            tr
+                td Display Address
+                td#panel
+                    .custom-control.custom-radio
+                        input#adr0.custom-control-input(type='radio', name='displayAdr', checked = "")
+                        label.custom-control-label(for='adr0') None
+
+            tr
+                td
+                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/setting'")
+                        | Cancel
+                td
+                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#delModal')
+                        | Modify
+
+    script.
+        var data = !{JSON.stringify(data)};
+        var adr = !{JSON.stringify(adr)};
+
+        $(document).ready(function () {
+            if (typeof data.Username !== "undefined") $('#username').val(data.Username)
+            if (typeof data.FirstName !== "undefined") $('#firstname').val(data.FirstName)
+            if (typeof data.LastName !== "undefined") $('#lastname').val(data.LastName)
+            if (typeof data.Gender !== "undefined") $('#gender').val(data.Gender)
+            if (typeof data.Birth !== "undefined") $('#birth').val(data.Birth)
+            if (typeof data.Phone !== "undefined") $('#phone').val(data.Phone)
+            if (typeof data.Email !== "undefined") $('#email').val(data.Email)
+
+            for (var i = 0; i < adr.length; i++){
+                $('#panel').append("<div class=\"custom-control custom-radio\">\n" +
+                    "  <input type=\"radio\" id=\"adr" + (parseInt(i) + 1) + "\" name=\"displayAdr\" class=\"custom-control-input\">\n" +
+                    "  <label class=\"custom-control-label\" for=\"adr" + (parseInt(i) + 1) + "\">" + displayAdr(adr[i])+"</label>\n" +
+                    "</div>");
+            }
+        });
+        function modCheck(){
+            var modData = $("form").serialize();
+            var priBits = "";
+            if ($('#disName').val() === 'Public') priBits += "1";
+            else priBits += "0";
+            if ($('#disGender').val() === 'Public') priBits += "1";
+            else priBits += "0";
+            if ($('#disBirth').val() === 'Public') priBits += "1";
+            else priBits += "0";
+
+            for (var i = 0; i <= adr.length; i++){
+                var str = "#adr" + i;
+                if ($(str).is(":checked")){
+                    priBits += i + "";
+                    break;
+                }
+            }
+
+            modData += "&PrivacyBits=" + priBits;
+
+            $.ajax({
+                data: modData,
+                url: '/user/modifyProfile',
+                dataType: 'json',
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    console.log("finish!!!!!");
+                    window.location.href = "/user/setting";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('error ' + textStatus + " " + errorThrown);
+                }
+            });
+        }
+        function displayAdr(adr){
+            var str = "", data = new Array();
+            data[0] = adr.StreetNum;
+            data[1] = adr.StreetAddress;
+            data[2] = adr.City;
+            data[3] = adr.State;
+            data[4] = adr.Country;
+            for (var i = 0; i <= 4; i++) {
+                if (str !== "") str += ", ";
+                str += data[i];
+            }
+            str += ' (zip-code: ' + adr.ZipCode + ')';
+            return str;
+        }

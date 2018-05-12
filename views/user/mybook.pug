@@ -13,7 +13,7 @@ block content
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
-                    h5#delModalLabel.modal-title Delete Address
+                    h5#delModalLabel.modal-title Delete Book
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                         span(aria-hidden='true') ×
 
@@ -55,6 +55,9 @@ block content
             console.log(num);
             for (var i = 0; i < num; i++) {
                 $('#panel').append(display(bookData[i], i));
+                if (bookData[i].bookStatus === "Sold" || bookData[i].bookStatus === "Transaction"){
+                    $('#cre' + i).attr("disabled", "true");
+                }
             }
         });
         function del(bookNum){
@@ -77,6 +80,12 @@ block content
                 }
             });
         }
+        function view(Num){
+            window.location.href = '/book/record?isbn=' + bookData[Num].ISBN;
+        }
+        function modify(Num){
+            window.location.href = '/user/modifybook?ID=' + bookData[Num]._id;
+        }
         function display(book, bookNum) {
             return "<tr>" +
                 "<td><middle>" + (parseInt(bookNum) + 1) + "</middle></td>" +
@@ -84,7 +93,8 @@ block content
                 "<td><middle>" + book.price + "</middle></td>" +
                 "<td><middle>" + book.date +  "</middle></td>" +
                 "<td><middle>" + book.bookStatus +  "</middle></td>" +
-                '<td>' + '<button class="btn btn-primary btn-sm"><i class="material-icons">\n' + 'description\n' + '</i></button>' + '</td>' +
+                '<td>' + '<button class="btn btn-primary btn-sm", onclick="view(' + bookNum + ')"><i class="material-icons">\n' + 'description\n' + '</i></button>' + '</td>' +
+                '<td>' + '<button class="btn btn-secondary btn-sm", id = "cre' + bookNum + '", onclick="modify(' + bookNum + ')"><i class="material-icons">create</i></button>' + '</td>' +
                 '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + bookNum + ')">' +
                 '<i class="material-icons">delete</i>' +'</button>' + '</td>' +
                 "</tr>";
