@@ -66,7 +66,7 @@ transactionSchema.methods.toComplete = function () {
   // BUYER
   this.transactionStatus = "Complete";
 // todo transactionStatus变成Complete时 bookStatus也变成Sold
-  this.sellerIsRead
+  this.sellerIsRead = false;
   this.save();
 };
 
