@@ -3,7 +3,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
-var bodyParser = require('body-parser');
+let bodyParser = require('body-parser');
 
 
 let indexRouter = require('./routes/index');
@@ -12,12 +12,12 @@ let transactionRouter = require('./routes/transaction');
 let userRouter = require('./routes/user');
 
 let app = express();
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var mongoose = require('mongoose');
+let session = require('express-session');
+let MongoStore = require('connect-mongo')(session);
+let mongoose = require('mongoose');
 //connect to MongoDB
 mongoose.connect('mongodb://localhost/web');
-var db = mongoose.connection;
+let db = mongoose.connection;
 
 //handle mongo error
 db.on('error', console.error.bind(console, 'connection error:'));

@@ -3,10 +3,69 @@ extends ../layout
 block header
   title Transaction Detail
 
+mixin min-item(key, value)
+  dt.col-sm-3= key
+  dd.col-sm-9= value
+
 block content
   .container
-    h1 Transaction Detail
+    h1.mb-5 Transaction Detail
     dl.row
-      each val, index in detail
-        dt.col-sm-3= index
-        dd.col-sm-9= val
+      dt.col-sm-3 Buyer
+      dd.col-sm-9
+        dl.row
+          if buyer.fullName
+            +min-item("Name", buyer.fullName)
+            +min-item("Phone", buyer.phone)
+            +min-item("Email", buyer.email)
+          +min-item("Address", buyer.address)
+      if seller
+        dt.col-sm-3 Seller
+        dd.col-sm-9
+          dl.row
+            +min-item("Name", seller.fullName)
+            +min-item("Phone", seller.phone)
+            +min-item("Email", seller.email)
+      dt.col-sm-3 Book
+      dd.col-sm-9
+        dl.row
+          +min-item("Title", book.title)
+          +min-item("Condition", book.condition)
+          +min-item("Price", book.price)
+          +min-item("Payment Method", book.paymentMethod)
+    case status
+      when "Created"
+        if buyer.fullName
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Accept')
+            button.btn.btn-success(type='submit') Accept
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Reject')
+            button.btn.btn-danger.ml-2(type='submit') Reject
+        else
+          .alert.alert-primary(role='alert')
+            | Waiting for seller to accept or reject this transaction.
+      when "Accepted"
+        if buyer.fullName
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Sent')
+            button.btn.btn-primary(type='submit') Declare Delivery
+        else
+          .alert.alert-primary(role='alert')
+            | Your transaction is accepted by seller. Waiting for seller to deliver the book!
+      when "Rejected"
+        .alert.alert-secondary(role='alert')
+          | This transaction is rejected by seller.
+      when "Sent"
+        if buyer.fullName
+          .alert.alert-primary(role='alert')
+            | Waiting for buyer to receive the book.
+        else
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Complete')
+            button.btn.btn-primary(type='submit') Declare Book Receiving
+      when "Complete"
+        .alert.alert-primary(role='alert')
+          | This transaction is complete.
+
+
