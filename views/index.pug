@@ -3,3 +3,11 @@ extends layout
 block content
   h1= title
   p Welcome to #{title} nonono
+  table(style='width:100%')
+    tr
+      th bookTitle
+      th price
+    each item in books
+      tr
+        td=item.bookTitle
+        td=item.price

@@ -1,0 +1,28 @@
+extends layout
+
+block content
+
+    #login.center-vertical
+        form.well(id='form-login', method='post')
+            h2= title
+            h6 Please Login To Your Account
+            .form-group
+                label Username
+                input.form-control(type='text', id='user-tf', name='user')
+            .form-group
+                label Password
+                input.form-control(type='password', id='pass-tf', name='pass')
+            .controls
+                button(id='suibian', type='button').btn.btn-primary.button-sign-in
+                    span.glyphicon.glyphicon-lock
+                    | Sign In
+            .clearfix
+            hr
+            .btm-links
+                #create-account
+                    a(href='/signup') Create An Account
+            .clearfix
+
+    include alert
+
+    script(src='/js/login.js')

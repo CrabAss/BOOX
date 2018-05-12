@@ -1,0 +1,71 @@
+
+extends layout
+
+block content
+
+	// preset form values if we receive a userdata object //
+	- user = typeof(udata) != 'undefined' ? udata : { }
+	// store the userId on the client side in a hidden input field //
+	input(type='hidden', value= user._id)#userId
+
+	#account-form-container.center-vertical
+		form(method="post")#account-form.form-horizontal.well
+			h2
+			hr
+			h6#sub2
+			.form-group
+				label.control-label.col-sm-3 Username
+				.col-sm-9
+					input.form-control#user-tf(type='text', name='user', value= user.user).disabled
+
+			.form-group
+				label.control-label.col-sm-3 Password
+				.col-sm-9
+					input.form-control#pass-tf(type='password', name='pass', value='')
+
+			.form-group
+				label.control-label.col-sm-3 Email
+				.col-sm-9
+					input.form-control#email-tf(type='email', name='email', value= user.email)
+
+			.form-group
+				label.control-label.col-sm-3 Phone
+				.col-sm-9
+					input.form-control#phone-tf(type='number', name='phone')
+
+			hr
+			h6#sub1 Please tell us a little about yourself.
+			.form-group
+				label.control-label.col-sm-3 First Name
+				.col-sm-9
+					input.form-control#fname-tf(type='text', name='fname', value= user.fname)
+
+			.form-group
+				label.control-label.col-sm-3 Last Name
+				.col-sm-9
+					input.form-control#lname-tf(type='text', name='lname', value= user.lname)
+
+			.form-group
+				label.control-label.col-sm-3 Gender
+				.col-sm-9
+					select.form-control#gender-tf(name='gender')
+						option(value='Male' selected='Male' == user.gender) Male
+						option(value='Female' selected='Female' == user.gender) Female
+						option(value='Other' selected='Other' == user.gender) Other
+
+			.form-group
+				label.control-label.col-sm-3 Year Birth
+				.col-sm-9
+					input.form-control#birth-tf(type='date', name='birth', value= user.birth)
+
+			hr
+			button(type='button')#account-form-btn1.btn.btn-default
+			button(type='button')#account-form-btn2.btn.btn-primary
+
+
+	// display form errors in a custom modal window //
+
+	include form-errors
+	include alert
+
+	script(src='/js/signup.js')
