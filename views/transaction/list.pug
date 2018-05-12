@@ -5,18 +5,18 @@ block header
 
 block content
   .container
-    h1 Transactions
+    h1.mb-4 Transactions
     .list-group
       .list-group-item
         .row
-          .col-sm Transaction ID
-          .col-sm Record ID
-          .col-sm Another User ID
-          .col-sm Status
+          .col-sm-3 Transaction ID
+          .col-sm-6 Book Name
+          .col-sm-2 Name of Another
+          .col-sm-1 Status
       each item in transactionList
         a.list-group-item.list-group-item-action(href='/transaction/detail/'+item.transactionID)
           .row
-            .col-sm= item.transactionID
-            .col-sm= item.recordID
-            .col-sm= item.anotherUserID
-            .col-sm= item.transactionStatus
+            .col-sm-3= item.transactionID
+            .col-sm-6= item.recordID
+            .col-sm-2= item.anotherUserID
+            .col-sm-1= item.transactionStatus

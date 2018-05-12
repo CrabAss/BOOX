@@ -3,6 +3,10 @@ extends ../layout
 block header
   title Transaction Detail
 
+mixin min-item(key, value)
+  dt.col-sm-3= key
+  dd.col-sm-9= value
+
 block content
   .container
     h1.mb-5 Transaction Detail
@@ -11,44 +15,41 @@ block content
       dd.col-sm-9
         dl.row
           if buyer.fullName
-            dt.col-sm-3 Name
-            dd.col-sm-9= buyer.fullName
-            dt.col-sm-3 Phone
-            dd.col-sm-9= buyer.phone
-            dt.col-sm-3 Email
-            dd.col-sm-9= buyer.email
-          dt.col-sm-3 Address
-          dd.col-sm-9= buyer.address
+            +min-item("Name", buyer.fullName)
+            +min-item("Phone", buyer.phone)
+            +min-item("Email", buyer.email)
+          +min-item("Address", buyer.address)
       if seller
         dt.col-sm-3 Seller
         dd.col-sm-9
           dl.row
-            dt.col-sm-3 Name
-            dd.col-sm-9= seller.fullName
-            dt.col-sm-3 Phone
-            dd.col-sm-9= seller.phone
-            dt.col-sm-3 Email
-            dd.col-sm-9= seller.email
+            +min-item("Name", seller.fullName)
+            +min-item("Phone", seller.phone)
+            +min-item("Email", seller.email)
       dt.col-sm-3 Book
       dd.col-sm-9
         dl.row
-          dt.col-sm-3 Title
-          dd.col-sm-9= book.title
-          dt.col-sm-3 Price
-          dd.col-sm-9= book.price
-          dt.col-sm-3 Payment Method
-          dd.col-sm-9= book.paymentMethod
+          +min-item("Title", book.title)
+          +min-item("Condition", book.condition)
+          +min-item("Price", book.price)
+          +min-item("Payment Method", book.paymentMethod)
     case status
       when "Created"
         if buyer.fullName
-          button.btn.btn-success Accept
-          button.btn.btn-danger.ml-2 Reject
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Accept')
+            button.btn.btn-success(type='submit') Accept
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Reject')
+            button.btn.btn-danger.ml-2(type='submit') Reject
         else
           .alert.alert-primary(role='alert')
             | Waiting for seller to accept or reject this transaction.
       when "Accepted"
         if buyer.fullName
-          button.btn.btn-primary Declare Delivery
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Sent')
+            button.btn.btn-primary(type='submit') Declare Delivery
         else
           .alert.alert-primary(role='alert')
             | Your transaction is accepted by seller. Waiting for seller to deliver the book!
@@ -60,7 +61,9 @@ block content
           .alert.alert-primary(role='alert')
             | Waiting for buyer to receive the book.
         else
-          button.btn.btn-primary Declare Book Receiving
+          form(method='post' style='display: inline')
+            input(type='hidden' name='action' value='Complete')
+            button.btn.btn-primary(type='submit') Declare Book Receiving
       when "Complete"
         .alert.alert-primary(role='alert')
           | This transaction is complete.

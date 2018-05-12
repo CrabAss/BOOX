@@ -16,40 +16,81 @@ let router = express.Router();
 
 let MongoClient = require('mongodb').MongoClient;
 const url = "mongodb://localhost:27017";
+const {ObjectId} = require('mongodb');
 
 /* GET home page. */
 
 
 
 router.get('/list/buy', function(req, res, next) {
-  transactionDB.find({buyerID: /*req.session.userID*/"5af56448b79f528af2f126b4"}).exec(function (err, docs) {
-    let transactionList = [];
-    docs.forEach(function (item) {
-      transactionList.push({
-        transactionID: item._id,
-        recordID: item.recordID,
-        anotherUserID: item.sellerID,
-        transactionStatus: item.transactionStatus
-      })
+  MongoClient.connect(url, function (err, mongo) {
+    if (err) throw err;
+    let db = mongo.db("web");
+    db.collection("transactions").aggregate([
+      {$match: {buyerID: /*req.session.userID*/ObjectId("5af5d79cabaade2100a9cfea")}},
+      {$lookup: {
+        from: "book",
+        localField: "recordID",
+        foreignField: "_id",
+        as: "bookRecord"
+      }},
+      {$lookup: {
+        from: "userAccount",
+        localField: "sellerID",
+        foreignField: "_id",
+        as: "sellerInfo"
+      }}], function (err, docs) {
+        let transactionList = [];
+        docs.forEach(function (item) {
+          // console.log(item.bookRecord);
+          transactionList.push({
+            transactionID: item._id,
+            recordID: item.bookRecord[0].bookTitle,
+            anotherUserID: item.sellerInfo[0].FirstName + " " + item.sellerInfo[0].LastName,
+            transactionStatus: item.transactionStatus,
+            readStatus: item.buyerIsRead
+          })
+        });
+        // console.log(transactionList);
+        res.render('transaction/list', {transactionList: transactionList});
     });
-    // console.log(transactionList);
-    res.render('transaction/list', {transactionList: transactionList});
   });
 });
 
 router.get('/list/sell', function(req, res, next) {
-  transactionDB.find({sellerID: /*req.session.userID*/"5af56448b79f528af2f126b4"}, function (err, docs) {
-    let transactionList = [];
-    docs.forEach(function (item) {
-      transactionList.push({
-        transactionID: item.recordID,
-        anotherUserID: item.buyerID,
-        transactionStatus: item.transactionStatus
-      })
+  MongoClient.connect(url, function (err, mongo) {
+    if (err) throw err;
+    let db = mongo.db("web");
+    db.collection("transactions").aggregate([
+      {$match: {sellerID: /*req.session.userID*/ObjectId("5af5d79cabaade2100a9cfea")}},
+      {$lookup: {
+          from: "book",
+          localField: "recordID",
+          foreignField: "_id",
+          as: "bookRecord"
+        }},
+      {$lookup: {
+          from: "userAccount",
+          localField: "buyerID",
+          foreignField: "_id",
+          as: "buyerInfo"
+        }}], function (err, docs) {
+      let transactionList = [];
+      docs.forEach(function (item) {
+        // console.log(item.bookRecord);
+        transactionList.push({
+          transactionID: item._id,
+          recordID: item.bookRecord[0].bookTitle,
+          anotherUserID: item.buyerInfo[0].FirstName + " " + item.buyerInfo[0].LastName,
+          transactionStatus: item.transactionStatus,
+          readStatus: item.sellerIsRead
+        })
+      });
+      // console.log(transactionList);
+      res.render('transaction/list', {transactionList: transactionList});
     });
-    // console.log(transactionList);
-    res.render('transaction/list', {transactionList: transactionList});
   });
+
 });
 
 router.get('/new/:recordID', function (req, res, next) {
@@ -73,13 +114,11 @@ router.get('/detail/:transactionID', function (req, res, next) {
       res.render("error", {message: "Transaction Not Found", error: err});
       return;
     }
+    transaction.readStatus = true;
     let isBuyer = transaction.buyerID.toString() === "5af5d79cabaade2100a9cfea";
     console.log("isBuyer:", isBuyer);
     let transactionInfo = {};
     // console.log(transaction);
-    // todo 拉取书籍信息
-    // todo 拉取另一方用户信息
-    // todo 拉取地址信息
     MongoClient.connect(url, function (err, mongo) {
       if (err) throw err;
       let db = mongo.db("web");
@@ -124,8 +163,36 @@ router.get('/detail/:transactionID', function (req, res, next) {
         });
       });
     });
-    // res.render("transaction/detail", {detail: transaction});
+    transaction.save();
   })
+});
+
+router.post('/detail/:transactionID', function (req, res, next) {
+  transactionDB.findOne({
+    _id: req.params.transactionID/*,
+    $or: [
+      { sellerID: req.session.userID },
+      { buyerID: req.session.userID }
+    ]*/}).exec(function (err, transaction) {
+    if (!transaction) {
+      err = new Error();
+      err.status = 404;
+      res.render("error", {message: "Transaction Not Found", error: err});
+      return;
+    }
+    if (req.body.action === "Accept") {
+      transaction.toAccepted();
+    } else if (req.body.action === "Reject") {
+      transaction.toRejected();
+    } else if (req.body.action === "Sent") {
+      transaction.toSent();
+    } else if (req.body.action === "Complete") {
+      transaction.toComplete();
+    } else {
+
+    }
+    res.redirect("/transaction/detail/" + req.params.transactionID);
+  });
 });
 
 module.exports = router;
