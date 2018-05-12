@@ -1,11 +1,10 @@
 extends ../layout
 
 block header
-    title favorite
+    title Favorites - BOOX
 
 block content
-    h1 favorite
-    middle= num
+    h1 Favorites
     // Modal
     #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
@@ -23,17 +22,17 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button.btn.btn-primary(type='button', onclick="delCheck()") Confirm
-    table#panel
-        tr
-            td
-                middle #
-            td
-                middle Book Title
-            td
-                middle ISBN
-            td
-                middle Date
-            td
+
+    table.table.table-hover.mt-5
+        thead
+            tr
+                th(scope="col") #
+                th(scope="col") Book Title
+                th(scope="col") ISBN
+                th(scope="col") Date
+                th(scope="col") Action
+        tbody#panel
+
 
     script.
         var favData = !{JSON.stringify(data)};
@@ -67,10 +66,10 @@ block content
         function display(favData, favNum) {
             return "<tr>" +
                 "<td><middle>" + (parseInt(favNum) + 1) + "</middle></td>" +
-                "<td><middle>" + favData.bookTitle + "</middle></td>" +
+                "<td><middle><a href='/book/detail?isbn=" + favData.ISBN + "'>" + favData.bookTitle + "</a></middle></td>" +
                 "<td><middle>" + favData.ISBN + "</middle></td>" +
                 "<td><middle>" + favData.date + "</middle></td>" +
                 '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + favNum + ')">' +
-                '<i class="material-icons">delete</i>' + '</button>' + '</td>' +
+                '&times' + '</button>' + '</td>' +
                 "</tr>";
         }

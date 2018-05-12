@@ -43,12 +43,15 @@ validateForm = function(a) {
 	$('#account-form-btn2').addClass('btn-primary');
 	
 // setup the alert that displays when an account is successfully created //
-    $('#exampleModalLabel').text('Account Created!');
-    $('.modal .modal-body').html('Your account has been created.</br>Click OK to return to the login page.');
     $('#account-form-btn2').click(function () {
         if(validateForm()) {
             $.post("signup", $('form#account-form').serialize(), function (data) {
-                $('.modal-alert').modal('show');
+                $('#exampleModalLabel').text('Account Created!');
+                $('.modal .modal-body').html('Your account has been created.</br>Click OK to return to the login page.');
+                $('#exampleModal').modal('show');
+                setTimeout(function (){
+                    window.location.href = '/login';
+                }, 3000);
             })
                 .fail(function (e) {
                     if (e.responseText === 'email-taken') {

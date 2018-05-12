@@ -2,33 +2,28 @@ extends ../layout
 
 block header
     script(src='https://code.jquery.com/jquery-3.3.1.min.js', integrity='sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=', crossorigin='anonymous')
-    title profile
+    title User Profile - BOOX
 
 block content
-    h1#id User Profile
-    p#result searching
-    table
-        tr
-            td Username
-            td#username ***
-        tr
-            td Name
-            td#name ***
-        tr
-            td Gender
-            td#gender ***
-        tr
-            td Birth
-            td#birth ***
-        tr
-            td Phone
-            td#phone ***
-        tr
-            td Email
-            td#email ***
-        tr
-            td Address
-            td#address ***
+    .row.justify-content-center
+        .col-sm-8
+            h1#id User Profile
+            dl.row.mt-5
+                dt.col-sm-3 Username
+                dd.col-sm-9#username ***
+                dt.col-sm-3 Name
+                dd.col-sm-9#name ***
+                dt.col-sm-3 Gender
+                dd.col-sm-9#gender ***
+                dt.col-sm-3 Birth
+                dd.col-sm-9#birth ***
+                dt.col-sm-3 Phone
+                dd.col-sm-9#phone ***
+                dt.col-sm-3 Email
+                dd.col-sm-9#email ***
+                dt.col-sm-3 Display Address
+                dd.col-sm-9#address ***
+
 
     script.
         var ID = !{JSON.stringify(id)};
@@ -37,7 +32,7 @@ block content
         var adr = !{JSON.stringify(adr)};
 
         $(document).ready(function () {
-            $('#id').text("Checking userID: " + ID)
+            // $('#id').text("Checking userID: " + ID)
             console.log(ID)
             if (status === '0') {
                 $('#result').text("No such user!")

@@ -1,7 +1,7 @@
 extends ../layout
 
 block header
-    title Place Autocomplete Address Form
+    title Manage Address - BOOX
     meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
     meta(charset='utf-8')
 
@@ -22,8 +22,6 @@ block header
 
 block content
     h1 Manage Address
-    middle= num
-    br
     // Modal
     #exampleModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
@@ -38,30 +36,33 @@ block content
 
                     .modal-body
                         #locationField.location
-                            input#autocomplete(placeholder='Enter your address', type='text')
 
                             table#address
                                 tr
+                                    td.label Auto Fill
+                                    td
+                                        input#autocomplete(placeholder='Enter your address', type='text')
+                                tr
                                     td.label Street
                                     td.slimField
-                                        input#street_number.field(placeholder='room & street number', name="StreetNum", disabled='true')
+                                        input#street_number.field(placeholder='room & street number', name="StreetNum")
                                     td.wideField(colspan='2')
-                                        input#route.field(placeholder='street address', name="StreetAddress", disabled='true')
+                                        input#route.field(placeholder='street address', name="StreetAddress")
                                 tr
                                     td.label City
                                     td.wideField(colspan='3')
-                                        input#locality.field(disabled='true', name='City')
+                                        input#locality.field(name='City')
                                 tr
                                     td.label State
                                     td.slimField
-                                        input#administrative_area_level_1.field(name = "State", disabled='true')
+                                        input#administrative_area_level_1.field(name = "State")
                                     td.label Zip code
                                     td.wideField
-                                        input#postal_code.field(name="ZipCode", disabled='true')
+                                        input#postal_code.field(name="ZipCode")
                                 tr
                                     td.label Country
                                     td.wideField(colspan='3')
-                                        input#country.field(name = "Country", disabled='true')
+                                        input#country.field(name = "Country")
                             h5#preview
                             button.btn(type='button', onclick='displayPreview()') preview
 
@@ -89,12 +90,14 @@ block content
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button.btn.btn-primary(type='button', onclick="delCheck()") Confirm
 
-    table#panel
-        tr
-            td
-                middle Num
-            td
-                middle Address
+    table.table.table-hover.mt-5
+        thead
+            tr
+                th(scope="col") #
+                th(scope="col") Address
+                th(scope="col") Action
+        tbody#panel
+
 
     br
     // Button trigger modal
@@ -113,6 +116,7 @@ block content
 
         //-------------create delete modify----------------
         function create(){
+
             $('#adrNum').val(0);
             $('#totNum').val(!{num});
         }
@@ -122,6 +126,11 @@ block content
         }
 
         function creCheck() {
+
+            if ($('#street_number').val() == "undefined"){
+                alert("Please input your address");
+                return;
+            }
             $.ajax({
                 data: $("form").serialize(),
                 url: '/user/submitAddress',
@@ -175,10 +184,11 @@ block content
             return'<tr>' +
                 '<td>' + disNum + '</td>' +
                 '<td><middle id="adr' + disNum + '" >' + str + '</middle></td>' +
-                '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + disNum + ')">X</button>' + '</td>' +
+                '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + disNum + ')">&times</button>' + '</td>' +
                 '</tr>';
         }
         function displayPreview() {
+            console.log($('#administrative_area_level_1').val());
             var str = "", data = new Array();
             data[0] = $('#street_number').val();
             data[1] = $('#route').val();

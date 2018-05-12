@@ -1,72 +1,53 @@
 extends ../layout
 
 block header
-    title Setting
+    title User Setting - BOOX
 
 block content
-    div
-        h1 Setting
-        table
-            tr
-                td Username
-                td
-                    input#username.form-control-plaintext(type='text', readonly='', value='None')
-
-            tr
-                td First Name
-                td
-                    input#firstname.form-control-plaintext(type='text', readonly='', value='None')
-                td
-                    middle#disName *
-            tr
-                td Last Name
-                td
-                    input#lastname.form-control-plaintext(type='text', readonly='', value='None')
-            tr
-                td Gender
-                td
-                    input#gender.form-control-plaintext(type='text', readonly='', value='None')
-                td
-                    middle#disGender *
-            tr
-                td Birth
-                td
-                    input#birth.form-control-plaintext(type='text', readonly='', value='None')
-                td
-                    middle#disBirth *
-            tr
-                td Phone
-                td
-                    input#phone.form-control-plaintext(type='text', readonly='', value='None')
-            tr
-                td Email
-                td
-                    input#email.form-control-plaintext(type='text', readonly='', value='None')
-            tr
-                td Display Address
-                td
-                    input#address.form-control-plaintext(type='text', readonly='', value='None')
-            tr
-                td
-                td
-                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/modifyprofile';")#btnModify
-                        | Modify
+    .row.justify-content-center
+        .col-sm-8
+            h1 User Setting
+            dl.row.mt-5
+                dt.col-sm-3 Username
+                dd.col-sm-9#username
+                dt.col-sm-3 First Name
+                dd.col-sm-7#firstname
+                dd.col-sm-2
+                    em#disName *
+                dt.col-sm-3 Last Name
+                dd.col-sm-9#lastname
+                dt.col-sm-3 Gender
+                dd.col-sm-7#gender
+                dd.col-sm-2
+                    em#disGender *
+                dt.col-sm-3 Birth
+                dd.col-sm-7#birth
+                dd.col-sm-2
+                    em#disBirth *
+                dt.col-sm-3 Phone
+                dd.col-sm-9#phone
+                dt.col-sm-3 Email
+                dd.col-sm-9#email
+                dt.col-sm-3 Display Address
+                dd.col-sm-9#address
+            button.btn.btn-primary.mt-3(type='button', onclick="window.location.href = '/user/modifyprofile';")#btnModify
+                | Modify
 
     script.
         var data = !{JSON.stringify(data)};
         var adr = !{JSON.stringify(adr)};
 
         $(document).ready(function () {
-            if (typeof data.Username !== "undefined") $('#username').val(data.Username)
-            if (typeof data.FirstName !== "undefined") $('#firstname').val(data.FirstName)
-            if (typeof data.LastName !== "undefined") $('#lastname').val(data.LastName)
-            if (typeof data.Gender !== "undefined") $('#gender').val(data.Gender)
-            if (typeof data.Birth !== "undefined") $('#birth').val(data.Birth)
-            if (typeof data.Phone !== "undefined") $('#phone').val(data.Phone)
-            if (typeof data.Email !== "undefined") $('#email').val(data.Email)
+            if (typeof data.Username !== "undefined") $('#username').text(data.Username)
+            if (typeof data.FirstName !== "undefined") $('#firstname').text(data.FirstName)
+            if (typeof data.LastName !== "undefined") $('#lastname').text(data.LastName)
+            if (typeof data.Gender !== "undefined") $('#gender').text(data.Gender)
+            if (typeof data.Birth !== "undefined") $('#birth').text(data.Birth)
+            if (typeof data.Phone !== "undefined") $('#phone').text(data.Phone)
+            if (typeof data.Email !== "undefined") $('#email').text(data.Email)
 
             if (adr !== ''){
-                $('#address').val(displayAdr(adr))
+                $('#address').text(displayAdr(adr))
             }
 
             if (data.PrivacyBits[0] === '1') {$('#disName').text('Public')}

@@ -150,6 +150,7 @@ router.get('/new/:recordID', function (req, res, next) {
           if (address.ZipCode) tempStr += (" (Zip: " + address.ZipCode + ")");
           addressList.push({id: address._id, adrString: tempStr});
         });
+        // console.log(addressList);
         res.render('transaction/new', {result: addressList, flag : req.session.flag});
       }
     });
@@ -159,12 +160,16 @@ router.get('/new/:recordID', function (req, res, next) {
 });
 
 router.post('/new', function (req, res, next) {
-    if (!req.session.flag) {
-        res.render("reminLogin", {title: 'jump', flag : req.session.flag});
-        return;
-    }
-
+  if (!req.session.flag) {
+      res.render("reminLogin", {title: 'jump', flag : req.session.flag});
+      return;
+  }
   let recordID = req.get("Referer").split("/").pop();
+  console.log(!req.body.address);
+  if (!req.body.address) {
+    res.redirect(req.get("Referer"));
+    return;
+  }
   // console.log(recordID);
   MongoClient.connect(url, function(err, mongo) {
     if (err) throw err;

@@ -1,79 +1,79 @@
 extends ../layout
 
 block header
-    title ModifyProfile
+    title Modify Profile - BOOX
 
 block content
-    h1 Modify Profile
-    // Modal
-    #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
-        .modal-dialog(role='document')
-            .modal-content
-                .modal-header
-                    h5#delModalLabel.modal-title Modify Your Profile
-                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                        span(aria-hidden='true') ×
-                .modal-body
-                    middle Do you want to modify your profile?
+    .row.justify-content-center
+        .col-sm-8
+            h1 Modify Profile
+            // Modal
+            #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='delModalLabel', aria-hidden='true')
+                .modal-dialog(role='document')
+                    .modal-content
+                        .modal-header
+                            h5#delModalLabel.modal-title Modify Your Profile
+                            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') ×
+                        .modal-body
+                            middle Do you want to modify your profile?
 
-                .modal-footer
-                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-                    button.btn.btn-primary(type='button', onclick="modCheck()") Confirm
-    form
-        table
-            tr
-                td First Name
-                td
-                    input#firstname.form-control(type='text', value='None', name = "FirstName")
-                td
-                    select.form-control#disName(name='disName')
-                        option(value='Private' selected='0' === data.PrivacyBits[0]) Private
-                        option(value='Public' selected='0' !== data.PrivacyBits[0]) Public
-            tr
-                td Last Name
-                td
-                    input#lastname.form-control(type='text', value='None', name = "LastName")
-            tr
-                td Gender
-                td
-                    select.form-control#gender(name='Gender')
-                        option(value='Male' selected='Male' === data.Gender) Male
-                        option(value='Female' selected='Female' === data.Gender) Female
-                        option(value='Other' selected='Other' === data.Gender) Other
-                td
-                    select.form-control#disGender(name='disGender')
-                        option(value='Private' selected='0' === data.PrivacyBits[1]) Private
-                        option(value='Public' selected='0' !== data.PrivacyBits[1]) Public
-            tr
-                td Birth
-                td
-                    input#birth.form-control(type='date', value='None', , name = "Birth")
-                td
-                    select.form-control#disBirth(name='disBirth')
-                        option(value='Private' selected='0' === data.PrivacyBits[1]) Private
-                        option(value='Public' selected='0' !== data.PrivacyBits[1]) Public
-            tr
-                td Phone
-                td
-                    input#phone.form-control(type='text', value='None', name = "Phone", required="")
-            tr
-                td Email
-                td
-                    input#email.form-control(type='text', value='None', name = "Email", required="")
-            tr
-                td Display Address
-                td#panel
-                    .custom-control.custom-radio
-                        input#adr0.custom-control-input(type='radio', name='displayAdr', checked = "")
-                        label.custom-control-label(for='adr0') None
-
-            tr
-                td
-                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/setting'")
-                        | Cancel
-                td
-                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#delModal')
+                        .modal-footer
+                            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                            button.btn.btn-primary(type='button', onclick="modCheck()") Confirm
+            form.mt-5
+                .form-group.row
+                    label.col-sm-3.col-form-label(for='firstname') First Name
+                    .col-sm-7
+                        input#firstname.form-control(type='text', name="FirstName")
+                    .col-sm-2
+                        select.form-control.custom-select#disName(name='disName')
+                            option(value='Private' selected='0' === data.PrivacyBits[0]) Private
+                            option(value='Public' selected='0' !== data.PrivacyBits[0]) Public
+                .form-group.row
+                    label.col-sm-3.col-form-label(for='lastname') Last Name
+                    .col-sm-7
+                        input#lastname.form-control(type='text', name = "LastName")
+                .form-group.row
+                    label.col-sm-3.col-form-label(for='gender') Gender
+                    .col-sm-7
+                        select.form-control.custom-select#gender(name='Gender')
+                            option(value='Male' selected='Male' === data.Gender) Male
+                            option(value='Female' selected='Female' === data.Gender) Female
+                            option(value='Other' selected='Other' === data.Gender) Other
+                    .col-sm-2
+                        select.form-control.custom-select#disGender(name='disGender')
+                            option(value='Private' selected='0' === data.PrivacyBits[1]) Private
+                            option(value='Public' selected='0' !== data.PrivacyBits[1]) Public
+                .form-group.row
+                    label.col-sm-3.col-form-label(for='birth') Birth
+                    .col-sm-7
+                        input#birth.form-control(type='date', name = "Birth")
+                    .col-sm-2
+                        select.form-control.custom-select#disBirth(name='disBirth')
+                            option(value='Private' selected='0' === data.PrivacyBits[1]) Private
+                            option(value='Public' selected='0' !== data.PrivacyBits[1]) Public
+                .form-group.row
+                    label.col-sm-3.col-form-label(for='phone') Phone
+                    .col-sm-9
+                        input#phone.form-control(type='text', name = "Phone", required)
+                .form-group.row
+                    label.col-sm-3.col-form-label(for='email') Email
+                    .col-sm-9
+                        input#email.form-control(type='text', name = "Email", required)
+                fieldset.form-group
+                    .row
+                        legend.col-form-label.col-sm-3.pt-0 Display Address
+                        .col-sm-9#panel
+                            .custom-control.custom-radio
+                                input#adr0.custom-control-input(type='radio', name='displayAdr', checked='')
+                                label.custom-control-label(for='adr0') None
+                .d-flex.flex-row-reverse.mt-4
+                    button.btn.btn-primary.px-3.ml-3(type='button', data-toggle='modal', data-target='#delModal')
                         | Modify
+                    button.btn.btn-secondary.px-3(type='button', onclick="window.location.href = '/user/setting'")
+                        | Cancel
+
 
     script.
         var data = !{JSON.stringify(data)};

@@ -1,55 +1,61 @@
 
 extends layout
 
+block header
+	title Sign Up - BOOX
+
 block content
 
-	// preset form values if we receive a userdata object //
-	- user = typeof(udata) != 'undefined' ? udata : { }
-	// store the userId on the client side in a hidden input field //
-	input(type='hidden', value= user._id)#userId
+	.row.justify-content-center
+		.col-sm-8
 
-	#account-form-container.center-vertical
-		form(method="post")#account-form.form-horizontal.well
-			h2 Sign Up
-			h6.mt-5 Choose your username & password
-			hr
-			.form-row
-				.form-group.col-md-6
-					label(for='user-tf') Username
-					input.form-control#user-tf(type='text', name='user', value= user.user).disabled
-				.form-group.col-md-6
-					label(for='pass-tf') Password
-					input.form-control#pass-tf(type='password', name='pass', value='')
-			.form-row
-				.form-group.col-md-6
-					label(for='email-tf') Email
-					input.form-control#email-tf(type='email', name='email', value= user.email)
-				.form-group.col-md-6
-					label(for='phone-tf') Phone
-					input.form-control#phone-tf(type='number', name='phone')
+			// preset form values if we receive a userdata object //
+			- user = typeof(udata) != 'undefined' ? udata : { }
+			// store the userId on the client side in a hidden input field //
+			input(type='hidden', value= user._id)#userId
 
-			h6.mt-4 Please tell us a little about yourself.
-			hr
-			.form-row
-				.form-group.col-md-6
-					label(for='fname-tf') First Name
-					input.form-control#fname-tf(type='text', name='fname', value= user.fname)
-				.form-group.col-md-6
-					label(for='lname-tf') Last Name
-					input.form-control#lname-tf(type='text', name='lname', value= user.lname)
-			.form-row
-				.form-group.col-md-6
-					label(for='gender-tf') Gender
-					select.custom-select#gender-tf(name='gender')
-						option(value='Male' selected='Male' === user.gender) Male
-						option(value='Female' selected='Female' === user.gender) Female
-						option(value='Other' selected='Other' === user.gender) Other
-				.form-group.col-md-6
-					label(for='birth-tf') Date of Birth
-					input.form-control#birth-tf(type='date', name='birth', value= user.birth)
-			.d-flex.flex-row-reverse.mt-4
-				button(type='button')#account-form-btn2.btn.btn-primary.ml-3.px-3 Submit
-				button(type='button')#account-form-btn1.btn.btn-secondary.px-3 Cancel
+			#account-form-container.center-vertical
+				form(method="post")#account-form.form-horizontal.well
+					h2 Sign Up
+					h6.mt-5 Choose your username & password
+					hr
+					.form-row
+						.form-group.col-md-6
+							label(for='user-tf') Username
+							input.form-control#user-tf(type='text', name='user', value= user.user).disabled
+						.form-group.col-md-6
+							label(for='pass-tf') Password
+							input.form-control#pass-tf(type='password', name='pass', value='')
+					.form-row
+						.form-group.col-md-6
+							label(for='email-tf') Email
+							input.form-control#email-tf(type='email', name='email', value= user.email)
+						.form-group.col-md-6
+							label(for='phone-tf') Phone
+							input.form-control#phone-tf(type='number', name='phone')
+
+					h6.mt-4 Please tell us a little about yourself.
+					hr
+					.form-row
+						.form-group.col-md-6
+							label(for='fname-tf') First Name
+							input.form-control#fname-tf(type='text', name='fname', value= user.fname)
+						.form-group.col-md-6
+							label(for='lname-tf') Last Name
+							input.form-control#lname-tf(type='text', name='lname', value= user.lname)
+					.form-row
+						.form-group.col-md-6
+							label(for='gender-tf') Gender
+							select.custom-select#gender-tf(name='gender')
+								option(value='Male' selected='Male' === user.gender) Male
+								option(value='Female' selected='Female' === user.gender) Female
+								option(value='Other' selected='Other' === user.gender) Other
+						.form-group.col-md-6
+							label(for='birth-tf') Date of Birth
+							input.form-control#birth-tf(type='date', name='birth', value= user.birth)
+					.d-flex.flex-row-reverse.mt-4
+						button(type='button')#account-form-btn2.btn.btn-primary.ml-3.px-3 Submit
+						button(type='button')#account-form-btn1.btn.btn-secondary.px-3 Cancel
 
 
 	// display form errors in a custom modal window //

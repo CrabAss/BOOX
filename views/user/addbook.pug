@@ -1,7 +1,7 @@
 extends ../layout
 
 block header
-    title Add Book
+    title Add Book - BOOX
     meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
     meta(charset='utf-8')
 
@@ -20,61 +20,107 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button.btn.btn-primary(type='button', onclick="addCheck()") Confirm
-    form
-        table#panel
-            tr
-                td
-                    middle ISBN
-                td
-                    input#ISBN.form-control(name="ISBN")
-            tr
-                td
-                    middle Book Title
-                td
+    form.mt-5#panel
+        .form-group.row
+            label.col-sm-2.col-form-label(for="ISBN") ISBN
+            div.col-sm-10
+                input#ISBN.form-control(name="ISBN")
+        .form-group.row
+            label.col-sm-2.col-form-label(for="bookTitle") Book Title
+            div.col-sm-10
+                .input-group
                     input#bookTitle.form-control(name="bookTitle", readonly="")
-                td
-                    button.btn.btn-primary(type='button', onclick="checkBook();")
-                        | Check
-            tr
-                td
-                    middle Book Condition
-                td
-                    input#bookCondition.form-control(name='bookCondition')
-            tr
-                td
-                    middle Printing Date
-                td
-                    input#printingDate.form-control(type="date", name="printingDate")
-            tr
-                td
-                    middle Price(US dollar)
-                td
-                    input#price.form-control(name="price")
-            tr
-                td
-                    middle Payment Method
-                td
-                    .form-check.form-check-inline
-                        input#Cash.form-check-input(type='checkbox', value='', onclick='addPayment("Cash")')
-                        label.form-check-label(for='Cash')
-                            | Cash
-                    .form-check.form-check-inline
-                        input#MasterCard.form-check-input(type='checkbox', value='', onclick='addPayment("MasterCard")')
-                        label.form-check-label(for='MasterCard')
-                            | MasterCard
-                    textarea#payment.form-control(name="payment", rows='3')
-            tr
-                td
-                    middle Remark
-                td
-                    textarea#remark.form-control(name="remark", rows='3')
-            tr
-                td
-                    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
-                        | Cancel
-                td
-                    button.btn.btn-primary(type='button', data-toggle='modal', data-target='#addModal')
-                        | Add
+                    .input-group-append
+                        button.btn.btn-outline-primary(type='button', onclick="checkBook();") Check
+
+        .form-group.row
+            label.col-sm-2.col-form-label(for="bookCondition") Book Condition
+            div.col-sm-10
+                input#bookCondition.form-control(name='bookCondition')
+        .form-group.row
+            label.col-sm-2.col-form-label(for="printingDate") Printing Date
+            div.col-sm-10
+                input#printingDate.form-control(type="date", name="printingDate")
+        .form-group.row
+            label.col-sm-2.col-form-label(for="price") Price (HKD)
+            div.col-sm-10
+                input#price.form-control(name="price")
+        .form-group.row
+            label.col-sm-2.col-form-label(for="") Payment Method
+            div.col-sm-10
+                .form-check.form-check-inline
+                    input#Cash.form-check-input(type='checkbox', value='', onclick='addPayment("Cash")')
+                    label.form-check-label(for='Cash')
+                        | Cash
+                .form-check.form-check-inline
+                    input#MasterCard.form-check-input(type='checkbox', value='', onclick='addPayment("MasterCard")')
+                    label.form-check-label(for='MasterCard')
+                        | MasterCard
+                textarea#payment.form-control(name="payment", rows='3')
+        .form-group.row
+            label.col-sm-2.col-form-label(for="remark") Remark
+            div.col-sm-10
+                textarea#remark.form-control(name="remark", rows='3')
+    .d-flex.flex-row-reverse.mt-4
+        button.btn.btn-primary.px-3.ml-3(type='button', data-toggle='modal', data-target='#addModal')
+            | Add
+        button.btn.btn-secondary.px-3(type='button', onclick="window.location.href = '/user/mybook';")
+            | Cancel
+
+        //table#panel
+        //    tr
+        //        td
+        //            middle ISBN
+        //        td
+        //            input#ISBN.form-control(name="ISBN")
+        //    tr
+        //        td
+        //            middle Book Title
+        //        td
+        //            input#bookTitle.form-control(name="bookTitle", readonly="")
+        //        td
+        //            button.btn.btn-primary(type='button', onclick="checkBook();")
+        //                | Check
+        //    tr
+        //        td
+        //            middle Book Condition
+        //        td
+        //            input#bookCondition.form-control(name='bookCondition')
+        //    tr
+        //        td
+        //            middle Printing Date
+        //        td
+        //            input#printingDate.form-control(type="date", name="printingDate")
+        //    tr
+        //        td
+        //            middle Price(US dollar)
+        //        td
+        //            input#price.form-control(name="price")
+        //    tr
+        //        td
+        //            middle Payment Method
+        //        td
+        //            .form-check.form-check-inline
+        //                input#Cash.form-check-input(type='checkbox', value='', onclick='addPayment("Cash")')
+        //                label.form-check-label(for='Cash')
+        //                    | Cash
+        //            .form-check.form-check-inline
+        //                input#MasterCard.form-check-input(type='checkbox', value='', onclick='addPayment("MasterCard")')
+        //                label.form-check-label(for='MasterCard')
+        //                    | MasterCard
+        //            textarea#payment.form-control(name="payment", rows='3')
+        //    tr
+        //        td
+        //            middle Remark
+        //        td
+        //            textarea#remark.form-control(name="remark", rows='3')
+        //    tr
+        //        td
+        //            button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
+        //                | Cancel
+        //        td
+        //            button.btn.btn-primary(type='button', data-toggle='modal', data-target='#addModal')
+        //                | Add
 
     script.
         function addPayment(str) {
@@ -104,6 +150,8 @@ block content
             });
         }
         function checkBook(){
+            if ($('#ISBN').val() == "")
+                return false;
             console.log("Check");
             try {
                 var book = getapi($('#ISBN').val());

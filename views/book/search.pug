@@ -1,27 +1,53 @@
 extends ../layout.pug
+block header
+    title Search - BOOX
+    style.
+        .card-columns {
+            column-count: 5;
+        }
+
+        .card {
+            color: #000 !important;
+        }
+
 
 block content
-    table
-        tr
-            form(method="GET" action="http://172.104.175.75:3000/book/search")
-                td ISBN:
-                td: input(type="text" name="ISBN" id="ISBN")
-                td book title:
-                td: input(type="text" name="title" id="title")
-                td book tag:
-                td: input(type="text" name="tags" id="tags")
-                td: input(type="submit" name="submit")
+    form(method="GET" action="/book/search")
+        div.row.form-group
+            label.col-sm-2.col-form-label(for="ISBN") ISBN
+            div.col-sm-8
+                input#ISBN.form-control(type="text" name="ISBN")
+            div.col-sm-2
+                input.btn.btn-primary.btn-block(type="submit" name="submit" value="Search")
+        div.row.form-group
+            label.col-sm-2.col-form-label(for="title") Book Title
+            div.col-sm-8
+                input#title.form-control(type="text" name="title")
+        div.row.form-group
+            label.col-sm-2.col-form-label(for="tags") Book Tag
+            div.col-sm-8
+                input#tags.form-control(type="text" name="tags")
 
-    table
-        tr
-            td cover
-            td title
-            td author
+
+    //table
+    //    tr
+    //        td cover
+    //        td title
+    //        td author
+    //    each ele in list
+    //        tr
+    //            td: image(id=ele+"cover")
+    //            td: a(id=ele+"title")
+    //            td(id=ele+"author")
+    .card-columns.mt-4
         each ele in list
-            tr
-                td: image(id=ele+"cover")
-                td: a(id=ele+"title")
-                td(id=ele+"author")
+            a(id=ele + "link")
+                .card
+                    img.card-img-top(id=ele + "cover")
+                    .card-body
+                        h5.card-title(id=ele + "title")
+                        p.card-text(id=ele + "authors")
+
 
     script.
 
@@ -37,8 +63,9 @@ block content
         for (i = 0; i < list.length; i++) {
             var book = getapi(list[i]);
             $("#"+list[i]+"cover").attr("src", book.imageLinks.thumbnail);
-            $("#"+list[i]+"title").text(book.title).attr("href", "http://172.104.175.75:3000/book/detail?isbn="+list[i]);
-            $("#"+list[i]+"author").text(book.authors.join(", "));
+            $("#"+list[i]+"title").text(book.title);
+            $("#"+list[i]+"link").attr("href", "http://172.104.175.75:3000/book/detail?isbn="+list[i]);
+            $("#"+list[i]+"authors").text(book.authors.join(", "));
         }
 
         function getapi(isbn) {

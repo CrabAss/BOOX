@@ -1,7 +1,7 @@
 extends ../layout
 
 block header
-  title Transaction Detail
+  title Transaction Detail - BOOX
 
 mixin min-item(key, value)
   dt.col-sm-3= key
@@ -47,7 +47,7 @@ block content
             | Waiting for seller to accept or reject this transaction.
           form(method='post' style='display: inline')
             input(type='hidden' name='action' value='Cancel')
-            button.btn.btn-secondary(type='submit') Cancel
+            button.btn.btn-danger(type='submit') Withdraw
       when "Accepted"
         if buyer.fullName
           form(method='post' style='display: inline')
@@ -55,13 +55,13 @@ block content
             button.btn.btn-primary(type='submit') Declare Delivery
           form(method='post' style='display: inline')
             input(type='hidden' name='action' value='Cancel')
-            button.btn.btn-secondary(type='submit') Cancel
+            button.btn.btn-danger.ml-2(type='submit') Withdraw
         else
           .alert.alert-primary(role='alert')
             | Your transaction is accepted by seller. Waiting for seller to deliver the book!
           form(method='post' style='display: inline')
             input(type='hidden' name='action' value='Cancel')
-            button.btn.btn-secondary(type='submit') Cancel
+            button.btn.btn-danger(type='submit') Withdraw
       when "Rejected"
         .alert.alert-secondary(role='alert')
           | This transaction is rejected by seller.
@@ -75,7 +75,7 @@ block content
             button.btn.btn-primary(type='submit') Declare Book Receiving
         form(method='post' style='display: inline')
           input(type='hidden' name='action' value='Cancel')
-          button.btn.btn-secondary(type='submit') Cancel
+          button.btn.btn-danger.ml-2(type='submit') Withdraw
       when "Complete"
         .alert.alert-primary(role='alert')
           | This transaction is complete.

@@ -216,6 +216,7 @@ router.get('/setting', function(req, res, next) {
                 // console.log("no Address ");
                 res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: result[0], adr: Adr, flag : req.session.flag});
             }else{
+
                 where = { UserID: req.session.userID };
                 // console.log(where);
                 dbo.collection("userAddress").find(where).toArray(function(err, result) {
@@ -223,7 +224,7 @@ router.get('/setting', function(req, res, next) {
                     // console.log("ok");
                     if (result[(parseInt(pri[3]) - 1)])
                          Adr = result[(parseInt(pri[3]) - 1)];
-                    res.render('user/setting', { title: 'setting' , status: 1, id: result[0]._id.toString() , data: data, adr: Adr, flag : req.session.flag});
+                    res.render('user/setting', { title: 'setting' , status: 1, id: "" , data: data, adr: Adr, flag : req.session.flag});
                     db.close();
                 });
             }

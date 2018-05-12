@@ -1,75 +1,78 @@
 extends ../layout
 
 block header
+    title Book Detail - BOOX
+    style.
+        #addFav, #delFav {
+            color: #F44336;
+            cursor: pointer;
+        }
+        .badge a {
+            color: #fff;
+            font-weight: bold !important;
+        }
+        .badge {
+            font-weight: normal;
+        }
+
+mixin min-item(id, key, value)
+    dt.col-sm-2= key
+    dd.col-sm-10(id=id)= value
 
 block content
-    #bookinfo
-        img#cover
-        table
-            tr
-                td title:
-                td#title
-            tr
-                td authors:
-                td#authors
-            tr
-                td description:
-                td#description
-            tr
-                td categories:
-                td#categories
-            tr
-                td publisher:
-                td#publisher
-            tr
-                td publish date:
-                td#publishedDate
-            tr
-                if !favorite
-                    button#addFav add favorite
-                else
-                    button#delFav delete favorite
-
-    hr
-
-    #tags
-        table
-            tr
-                td tags:
-                td
-                    each tag in tagList
-                        span(id=tag.tagName)
-                            | #{tag.tagName}
-                            if tag.delUrl
-                                | [
-                                a(href=tag.delUrl) X
-                                | ]
-                            | ,
-                    | insert:
-                    form(action="http://172.104.175.75:3000/book/detail" method="GET")
-                        input(type="hidden" value=isbn name="isbn")
-                        input(type="text" required="required" name="addTag")
-                        input(type="submit" value="submit")
-
-
-    hr
+    .row
+        .col-2
+            img#cover.w-100
+        .col-10
+            #bookInfo
+                h2
+                    span#title.mr-3
+                    if !favorite
+                        i#addFav.material-icons favorite_border
+                    else
+                        i#delFav.material-icons favorite
+                p#authors
+                dl.row
+                    +min-item("categories", "Categories", "")
+                    +min-item("publisher", "Publisher", "")
+                    +min-item("publishedDate", "Publication Date", "")
+                    +min-item("description", "Description", "")
+                    dt.col-sm-2 Tags
+                    dd#tags.col-sm-10
+                        if tagList.length !== 0
+                            .d-inline-block.mb-3
+                                each tag in tagList
+                                    span.badge.badge-pill.badge-info.mr-2(id=tag.tagName) #{tag.tagName}
+                                        if tag.delUrl
+                                            | &nbsp;&nbsp;
+                                            a(href=tag.delUrl) &times
+                        form(action="/book/detail" method="GET")
+                            input(type="hidden" value=isbn name="isbn")
+                            .input-group
+                                input.form-control(type='text', required, name="addTag", placeholder="Your tag", aria-label="Add your tag")
+                                .input-group-append
+                                    button.btn.btn-outline-secondary(type='submit') Add
 
     #sellerInfo
-        table
-            tr
-                td Seller
-                td Book Condition
-                td Price
-                td Payment Available
-                td Remark
-            each ele in list
+        table.table.table-hover
+            thead
                 tr
-                    td: a(href="../user/profile?ID="+ele.sellerID) seller info
-                    td= ele.bookCondition
-                    td= ele.price
-                    td= ele.payment
-                    td= ele.remark
-                    td: a(href="../transaction/new/"+ele._id) send request
+                    th(scope="col") Seller
+                    th(scope="col") Book Condition
+                    th(scope="col") Price
+                    th(scope="col") Payment Available
+                    th(scope="col") Remark
+                    th(scope="col") Action
+            tbody
+                each ele in list
+                    tr
+                        td: a(href="../user/profile?ID="+ele.sellerID) Seller Info
+                        td= ele.bookCondition
+                        td= ele.price
+                        td= ele.payment
+                        td= ele.remark
+                        if (userID !== ele.sellerID)
+                            td: a(href="../transaction/new/"+ele._id) Buy It Now
 
 
     script.
@@ -80,7 +83,7 @@ block content
             var data = getapi();
             var book = data.items[0].volumeInfo;
             $("#cover").attr("src", book.imageLinks.thumbnail);
-            $("#title").text(book.title + " " + book.subtitle);
+            $("#title").text(book.title);
             $("#authors").text(book.authors.join(", "));
             $("#description").text(book.description);
             $("#categories").text(book.categories.join(", "));

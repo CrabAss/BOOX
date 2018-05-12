@@ -1,13 +1,16 @@
 extends ../layout
 
 block header
-    title My Book
+    title My Book - BOOX
     meta(name='viewport', content='initial-scale=1.0, user-scalable=no')
     meta(charset='utf-8')
+    style.
+        button i {
+            font-size: 8px;
+        }
 
 block content
     h1 My Book
-    middle= num
     // Modal
     #delModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
@@ -25,27 +28,25 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button.btn.btn-primary(type='button', onclick="delCheck()") Confirm
-    br
-    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook';")
-        | All
-    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook?status=Available';")
-        | Available
-    button.btn.btn-primary(type='button', onclick="window.location.href = '/user/mybook?status=Sold';")
-        | Sold
-    table#panel
-        tr
-            td
-                middle #
-            td
-                middle Book Title
-            td
-                middle Price
-            td
-                middle Date
-            td
-                middle Status
-            td
-            td
+    ul.nav.mt-5
+        li.nav-item
+            a.nav-link(href='mybook') All
+        li.nav-item
+            a.nav-link(href='mybook?status=Available') Available
+        li.nav-item
+            a.nav-link(href='mybook?status=Sold') Sold
+
+    table.table.table-hover.mt-2
+        thead
+            tr
+                th(scope="col") #
+                th(scope="col") Book Title
+                th(scope="col") Price
+                th(scope="col") Date
+                th(scope="col") Status
+                th(scope="col") Actions
+        tbody#panel
+
     button.btn.btn-primary(type='button', onclick="window.location.href = '/user/addbook';")
         | Add New Book
     script.
@@ -57,6 +58,7 @@ block content
                 $('#panel').append(display(bookData[i], i));
                 if (bookData[i].bookStatus === "Sold" || bookData[i].bookStatus === "Transaction"){
                     $('#cre' + i).attr("disabled", "true");
+                    $('#del' + i).attr("disabled", "true");
                 }
             }
         });
@@ -93,9 +95,9 @@ block content
                 "<td><middle>" + book.price + "</middle></td>" +
                 "<td><middle>" + book.date +  "</middle></td>" +
                 "<td><middle>" + book.bookStatus +  "</middle></td>" +
-                '<td>' + '<button class="btn btn-primary btn-sm", onclick="view(' + bookNum + ')"><i class="material-icons">\n' + 'description\n' + '</i></button>' + '</td>' +
-                '<td>' + '<button class="btn btn-secondary btn-sm", id = "cre' + bookNum + '", onclick="modify(' + bookNum + ')"><i class="material-icons">create</i></button>' + '</td>' +
-                '<td>' + '<button class="btn btn-danger btn-sm", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + bookNum + ')">' +
+                '<td>' + '<button class="btn btn-primary btn-sm", onclick="view(' + bookNum + ')"><i class="material-icons">\n' + 'description\n' + '</i></button>' +
+                '<button class="btn btn-secondary btn-sm ml-2", id = "cre' + bookNum + '", onclick="modify(' + bookNum + ')"><i class="material-icons">create</i></button>' +
+                '<button class="btn btn-danger btn-sm ml-2", , id = "del' + bookNum + '", data-toggle=\'modal\', data-target=\'#delModal\', onclick="del(' + bookNum + ')">' +
                 '<i class="material-icons">delete</i>' +'</button>' + '</td>' +
                 "</tr>";
         }
