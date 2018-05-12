@@ -1,22 +1,22 @@
 let express = require('express');
 let router = express.Router();
 
-var MongoClient= require("mongodb").MongoClient;
-var url = "mongodb://localhost:27017";
+let MongoClient= require("mongodb").MongoClient;
+let url = "mongodb://localhost:27017";
 const {ObjectId} = require('mongodb');
 
 /* GET home page. */
 router.get('/detail', function(req, res, next) {
     /*if (!req.session.userID) {
         res.render("jump", {title: 'jump'});
-    } else var userID = req.session.userID; */
-    var userID = "5af52b61b238639f70ee4311";
+    } else let userID = req.session.userID; */
+    let userID = "5af52b61b238639f70ee4311";
 
-    var data = req.query;
-    var isbn = data.isbn;
+    let data = req.query;
+    let isbn = data.isbn;
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("web");
+        let dbo = db.db("web");
         name = req.query.addTag;
 
         if (req.query.addTag) {
@@ -42,14 +42,14 @@ router.get('/detail', function(req, res, next) {
             dbo.collection("favorite").deleteMany({userID: userID, ISBN: isbn});
         }
 
-        var where = {ISBN: isbn, bookStatus: "Available"};
+        let where = {ISBN: isbn, bookStatus: "Available"};
         if (data.recordID)
             where._id = data.recordID;
         dbo.collection("favorite").find({userID: userID, ISBN: isbn}).toArray(function (err, favList) {
-            var favFlag = 0;
+            let favFlag = 0;
             if (favList.length > 0) favFlag = 1;
             dbo.collection("userAccount").find({_id: ObjectId("5af5b0d55fb28b9192f5bbd5")}).toArray(function (err, userList) {
-                var username = userList[0].Username;
+                let username = userList[0].Username;
                 dbo.collection("tags").find({ISBN: isbn}).toArray(function (err, tagList) {
                     for (i = 0; i < tagList.length; i++)
                         if (tagList[i].userID == userID)
@@ -75,7 +75,7 @@ router.get('/test', function (req, res, next) {
 
 router.get("/", function (req, res, next) {
     MongoClient.connect(url, function(err, db) {
-        var dbo=db.db("web");
+        let dbo=db.db("web");
         dbo.collection("book").find().sort({date: -1}).limit(10).toArray(function (err, rank) {
             res.render('book/index', {list: rank});
         });
@@ -83,20 +83,20 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/search", function (req, res, next) {
-    var isbn = req.query.isbn;
-    var title = req.query.title;
-    var tags = req.query.tags;
-    var where = {};
+    let isbn = req.query.isbn;
+    let title = req.query.title;
+    let tags = req.query.tags;
+    let where = {};
     if (isbn) where.ISBN = isbn;
     if (title) where.bookTitle = new RegExp(title);
     MongoClient.connect(url, function(err, db) {
-        var dbo=db.db("web");
+        let dbo=db.db("web");
         dbo.collection("book").find(where).toArray(function (err, list1) {
             if (tags) where={tagName:tags};
             dbo.collection("tags").find(where).toArray(function (err, list2) {
-                console.log("ss");
-                console.log(where);
-                var rank = [];
+                // console.log("ss");
+                // console.log(where);
+                let rank = [];
                 if (tags) {
                     for (i = 0; i < list2.length; i++)
                         for (j = 0; j < list1.length; j++)
@@ -105,9 +105,9 @@ router.get("/search", function (req, res, next) {
                 } else
                     for (i = 0; i < list1.length; i++)
                         rank.push(list1[i].ISBN);
-                console.log(rank);
+                // console.log(rank);
                 rank = Array.from(new Set(rank));
-                console.log(rank);
+                // console.log(rank);
                 res.render("book/search", {list: rank, query: req.query});
             })
             //res.render("book/search", {list: {}});
@@ -118,17 +118,17 @@ router.get("/search", function (req, res, next) {
 router.get("/record", function (req, res, next) {
     /*if (!req.session.userID) {
         res.render("jump", {title: 'jump'});
-    } else var userID = req.session.userID; */
-    var userID = "5af52b61b238639f70ee4311";
+    } else let userID = req.session.userID; */
+    let userID = "5af52b61b238639f70ee4311";
 
-    var data = req.query;
-    var isbn = data.isbn;
+    let data = req.query;
+    let isbn = data.isbn;
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
 
-        var dbo = db.db("web");
+        let dbo = db.db("web");
         dbo.collection("userAccount").find({_id: ObjectId("5af5b0d55fb28b9192f5bbd5")}).toArray(function (err, userList) {
-            var username = userList[0].Username;
+            let username = userList[0].Username;
             dbo.collection("tags").find({ISBN: isbn}).toArray(function (err, tagList) {
                 dbo.collection("book").find({ISBN: isbn, sellerID: userID}).toArray(function (err, bookList) {
                     if (bookList.length === 0)

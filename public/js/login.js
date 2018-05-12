@@ -35,7 +35,7 @@ $(document).ready(function(){
             $('#get-credentials').modal('show');
         });
         $('#login .button-rememember-me').click(function(e) {
-            var span = $(this).find('span');
+            let span = $(this).find('span');
             if (span.hasClass('glyphicon-unchecked')){
                 span.addClass('glyphicon-ok');
                 span.removeClass('glyphicon-unchecked');
@@ -50,7 +50,7 @@ $(document).ready(function(){
         $('#get-credentials').on('hidden.bs.modal', function(){ $('#user-tf').focus(); });
     }
 
-	var lv = new LoginValidator();
+	let lv = new LoginValidator();
 
 // main login form //
     $('#suibian').click(function () {

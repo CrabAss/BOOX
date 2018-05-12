@@ -108,17 +108,17 @@ router.get('/new/:recordID', function (req, res, next) {
 
   MongoClient.connect(url, function(err, db){
     if (err) throw err;
-    console.log("Success connect");
+    // console.log("Success connect");
 
     let dbo = db.db("web");
     let where = {UserID: req.session.userID};
     dbo.collection("userAddress").find(where).toArray(function(err, result) {
       if (err) throw err;
       if (result === []){
-        console.log("No such user address");
+        // console.log("No such user address");
         res.render('transaction/new', {});
       } else {
-        console.log("Found!");
+        // console.log("Found!");
         let addressList = [], tempStr = "";
         result.forEach(function (address) {
           tempStr = "";
@@ -141,14 +141,14 @@ router.get('/new/:recordID', function (req, res, next) {
 router.post('/new', function (req, res, next) {
   req.session.userID = '5af52b61b238639f70ee4311';
   let recordID = req.get("Referer").split("/").pop();
-  console.log(recordID);
+  // console.log(recordID);
   MongoClient.connect(url, function(err, mongo) {
     if (err) throw err;
-    console.log("Success connect");
+    // console.log("Success connect");
     let db = mongo.db("web");
     let where = {_id: ObjectId(recordID)};
     db.collection("book").findOne(where, function (err, recordInfo) {
-      console.log(recordInfo);
+      // console.log(recordInfo);
       transactionDB.create({
         recordID: recordID,
         buyerID: req.session.userID,
@@ -185,7 +185,7 @@ router.get('/detail/:transactionID', function (req, res, next) {
     } else {
       transaction.sellerIsRead = true
     }
-    console.log("isBuyer:", isBuyer);
+    // console.log("isBuyer:", isBuyer);
     let transactionInfo = {};
     // console.log(transaction);
     MongoClient.connect(url, function (err, mongo) {
@@ -226,7 +226,7 @@ router.get('/detail/:transactionID', function (req, res, next) {
             }
             transactionInfo.buyer.address += ' (Zip code: ' + address.ZipCode + ')';
             transactionInfo.status = transaction.transactionStatus;
-            console.log(transactionInfo);
+            // console.log(transactionInfo);
             res.render("transaction/detail", transactionInfo);
           });
         });
